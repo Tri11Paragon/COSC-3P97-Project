@@ -1,4 +1,21 @@
-use actix_web::{get, post, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, web, App, Error, HttpResponse, HttpServer, Responder};
+use serde::{Deserialize, Serialize};
+
+#[derive(Deserialize, Debug)]
+struct Info {
+    username: String,
+}
+
+#[derive(Serialize)]
+struct Response {
+    meows: String,
+}
+
+#[post("/meow")]
+async fn meow(info: web::Json<Info>) -> impl Responder{
+    println!("{:?}", info.0);
+    HttpResponse::Ok().json(Response{meows: info.username.clone()})
+}
 
 #[get("/")]
 async fn hello() -> impl Responder {
@@ -16,6 +33,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .service(hello)
             .service(echo)
+            .service(meow)
     })
     .bind(("0.0.0.0", 8080))?
     .run()
