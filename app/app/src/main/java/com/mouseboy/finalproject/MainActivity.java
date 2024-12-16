@@ -38,14 +38,12 @@ public class MainActivity extends AppCompatActivity {
             Logger.getGlobal().log(Level.INFO, "Lat/Long " + loc.getLatitude() + " " + loc.getLongitude());
         });
 
-
         TextView textView = findViewById(R.id.textView);
         findViewById(R.id.button).setOnClickListener(e -> ServerApi.meow(this,
         "username thing",
             textView::setText,
             Util::logThrowable
         ));
-
 
         textView2 = findViewById(R.id.textView2);
         findViewById(R.id.button2).setOnClickListener(e -> WeatherApi.request(this,

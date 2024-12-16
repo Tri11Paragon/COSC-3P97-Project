@@ -12,9 +12,10 @@ struct Response {
 }
 
 #[post("/meow")]
-async fn meow(info: web::Json<Info>) -> impl Responder{
-    println!("{:?}", info.0);
-    HttpResponse::Ok().json(Response{meows: info.username.clone()})
+async fn meow(info: web::Json<Info>) -> impl Responder {
+    HttpResponse::Ok().json(Response {
+        meows: info.username.clone(),
+    })
 }
 
 #[get("/")]
@@ -29,13 +30,8 @@ async fn echo(req_body: String) -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
-        App::new()
-            .service(hello)
-            .service(echo)
-            .service(meow)
-    })
-    .bind(("0.0.0.0", 8080))?
-    .run()
-    .await
+    HttpServer::new(|| App::new().service(hello).service(echo).service(meow))
+        .bind(("0.0.0.0", 8080))?
+        .run()
+        .await
 }

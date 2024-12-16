@@ -5,7 +5,7 @@ import android.os.Handler;
 
 import androidx.annotation.NonNull;
 
-import org.json.JSONObject;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -30,13 +30,17 @@ public class OkHttp {
 
     static {
         OkHttpClient client = null;
-        try{
+        try {
             TrustManager[] trustManagers = new TrustManager[]{
                     new X509TrustManager() {
                         @Override
-                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {}
+                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                        }
+
                         @Override
-                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {}
+                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                        }
+
                         @Override
                         public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                             return new java.security.cert.X509Certificate[]{};
@@ -53,11 +57,11 @@ public class OkHttp {
 //            }
             X509TrustManager trustManager = (X509TrustManager) trustManagers[0];
             SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, trustManagers,  new java.security.SecureRandom());
+            sslContext.init(null, trustManagers, new java.security.SecureRandom());
             SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
             client = new OkHttpClient.Builder().sslSocketFactory(sslSocketFactory, trustManager).followSslRedirects(true).build();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             Logger.getGlobal().log(Level.SEVERE, e.getMessage());
         }
         CLIENT = client;
@@ -87,29 +91,29 @@ public class OkHttp {
         }, onFailure);
     }
 
-    public static void getJson(Context context, String url, OnResponse<JSONObject> onResponse, OnFailure onFailure) {
+    public static <T> void getJson(Context context, String url, Class<T> clazz, OnResponse<T> onResponse, OnFailure onFailure) {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
         enqueue(context, request, response -> {
             try {
                 String body = response.body() != null ? response.body().string() : "";
-                onResponse.onResponse(new JSONObject(body));
+                onResponse.onResponse(new Gson().fromJson(body, clazz));
             } catch (Exception e) {
                 onFailure.onFailure(e);
             }
         }, onFailure);
     }
 
-    public static void postJson(Context context, String url, JSONObject data, OnResponse<JSONObject> onResponse, OnFailure onFailure) {
+    public static <S, T> void postJson(Context context, String url, S data, Class<T> clazz, OnResponse<T> onResponse, OnFailure onFailure) {
         Request request = new Request.Builder()
                 .url(url)
-                .post(RequestBody.create(data.toString(), JSON))
+                .post(RequestBody.create(new Gson().toJson(data), JSON))
                 .build();
         enqueue(context, request, response -> {
             try {
                 String body = response.body() != null ? response.body().string() : "";
-                onResponse.onResponse(new JSONObject(body));
+                onResponse.onResponse(new Gson().fromJson(body, clazz));
             } catch (Exception e) {
                 onFailure.onFailure(e);
             }
