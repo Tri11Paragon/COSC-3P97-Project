@@ -47,7 +47,8 @@ public class MainActivity extends AppCompatActivity {
 
         textView2 = findViewById(R.id.textView2);
         findViewById(R.id.button2).setOnClickListener(e -> WeatherApi.request(this,
-                new WeatherApi.WeatherRequest(), this::receiveReport,
+                new WeatherApi.WeatherRequest(),
+                this::receiveReport,
                 Util::logThrowable
         ));
     }
