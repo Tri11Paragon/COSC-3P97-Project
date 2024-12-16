@@ -40,28 +40,28 @@ public class MainActivity extends AppCompatActivity {
 
         TextView textView = findViewById(R.id.textView);
         findViewById(R.id.button).setOnClickListener(e -> ServerApi.meow(this,
-        "username thing",
-            textView::setText,
-            Util::logThrowable
+                "username thing",
+                textView::setText,
+                Util::logThrowable
         ));
 
         textView2 = findViewById(R.id.textView2);
         findViewById(R.id.button2).setOnClickListener(e -> WeatherApi.request(this,
-            new WeatherApi.WeatherRequest(), this::receiveReport,
-            Util::logThrowable
+                new WeatherApi.WeatherRequest(), this::receiveReport,
+                Util::logThrowable
         ));
     }
 
-    private void receiveReport(WeatherApi.WeatherResult report){
+    private void receiveReport(WeatherApi.WeatherResult report) {
         Field[] fields = WeatherApi.WeatherResult.CurrentWeather.class.getFields();
         StringBuilder blah = new StringBuilder();
-        for(Field field:fields){
+        for (Field field : fields) {
             try {
                 blah
-                    .append(field.getName())
-                    .append(": ")
-                    .append(field.get(report.current))
-                    .append("\n");
+                        .append(field.getName())
+                        .append(": ")
+                        .append(field.get(report.current))
+                        .append("\n");
             } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
