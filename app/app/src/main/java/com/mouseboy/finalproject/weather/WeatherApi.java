@@ -5,14 +5,10 @@ import android.location.Location;
 
 import androidx.annotation.NonNull;
 
-import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
+import com.mouseboy.finalproject.util.Gson;
 import com.mouseboy.finalproject.util.OkHttp;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.TimeZone;
@@ -89,13 +85,13 @@ public class WeatherApi {
         public CurrentUnits current_units;
 
         public static class CurrentWeather {
-            @JsonAdapter(UnixTimestampAdapter.class)
+            @JsonAdapter(Gson.UnixTimestampAdapter.class)
             public Date time;
             public long interval;
             public double temperature_2m;
             public double relative_humidity;
             public double apparent_temperature;
-            @JsonAdapter(NumericBooleanAdapter.class)
+            @JsonAdapter(Gson.NumericBooleanAdapter.class)
             public boolean is_day;
             public double precipitation;
             public double rain;
@@ -126,38 +122,6 @@ public class WeatherApi {
             public String wind_speed_10m;
             public String wind_direction_10m;
             public String wind_gusts_10m;
-        }
-    }
-
-    public static class UnixTimestampAdapter extends TypeAdapter<Date> {
-        @Override
-        public void write(JsonWriter out, Date value) throws IOException {
-            if (value == null) {
-                out.nullValue();
-                return;
-            }
-            out.value(value.getTime() / 1000);
-        }
-
-        @Override
-        public Date read(JsonReader in) throws IOException {
-            if (in.peek() == JsonToken.NULL) {
-                in.nextNull();
-                return null;
-            }
-            return new Date(in.nextLong() * 1000);
-        }
-    }
-
-    public static class NumericBooleanAdapter extends TypeAdapter<Boolean> {
-        @Override
-        public void write(JsonWriter out, Boolean value) throws IOException {
-            out.value(value ? 1 : 0);
-        }
-
-        @Override
-        public Boolean read(JsonReader in) throws IOException {
-            return in.nextInt() == 1;
         }
     }
 
