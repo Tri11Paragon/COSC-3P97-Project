@@ -37,6 +37,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.gson)
     implementation(libs.okhttp3.okhttp)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

@@ -77,46 +77,53 @@ public class LocationTracker {
 
         if (hasGps) {
             lm.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER,
-                    5000,
-                    0F,
-                    new LocationListener() {
-                        @Override
-                        public void onLocationChanged(@NonNull Location location) {
-                            gps(location);
-                        }
-
-                        @Override
-                        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-                        }
-                    }
+                LocationManager.GPS_PROVIDER,
+                5000,
+                0F,
+                create(true)
             );
         }
         if (hasNetwork) {
             lm.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER,
-                    5000,
-                    0F,
-                    new LocationListener() {
-                        @Override
-                        public void onLocationChanged(@NonNull Location location) {
-                            gps(location);
-                        }
-
-                        @Override
-                        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-                        }
-                    }
+                LocationManager.NETWORK_PROVIDER,
+                5000,
+                0F,
+                create(false)
             );
         }
         gps(lm.getLastKnownLocation(LocationManager.GPS_PROVIDER));
         network(lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
     }
 
-    private static void network(Location location) {
+    private static LocationListener create(boolean g){
+        return new LocationListener() {
+            @Override
+            public void onLocationChanged(@NonNull Location location) {
+                if (g) gps(location); else network(location);
+            }
 
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            @Override
+            public void onFlushComplete(int requestCode) {}
+
+            @Override
+            public void onProviderDisabled(@NonNull String provider) {
+                if (g) hasGps=false; else hasNetwork=false;
+            }
+            @Override
+            public void onProviderEnabled(@NonNull String provider) {
+                if (g) hasGps=true; else hasNetwork=true;
+            }
+        };
+    }
+
+    private static void network(Location loc) {
+        if(!hasGps && loc != null){
+            curr = loc;
+            for(LocationListeners item:listeners)item.update(curr);
+        }
     }
 
     private static void gps(Location loc){

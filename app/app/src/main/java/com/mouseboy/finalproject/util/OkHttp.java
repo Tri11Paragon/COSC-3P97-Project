@@ -63,8 +63,7 @@ public class OkHttp {
         CLIENT = client;
     }
 
-    public static final MediaType JSON
-            = MediaType.parse("application/json; charset=utf-8");
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     public interface OnResponse<T> {
         void onResponse(T data);
