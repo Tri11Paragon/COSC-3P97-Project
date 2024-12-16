@@ -9,7 +9,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.gson.GsonBuilder;
 import com.mouseboy.finalproject.server.ServerApi;
+import com.mouseboy.finalproject.util.Gson;
 import com.mouseboy.finalproject.util.Util;
 import com.mouseboy.finalproject.weather.LocationTracker;
 import com.mouseboy.finalproject.weather.WeatherApi;
@@ -39,9 +41,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         TextView textView = findViewById(R.id.textView);
-        findViewById(R.id.button).setOnClickListener(e -> ServerApi.meow(this,
-                "username thing",
-                textView::setText,
+        findViewById(R.id.button).setOnClickListener(e -> ServerApi.listWalks(this,
+                "hewwow",
+                walks -> {
+                    textView.setText(new GsonBuilder().setPrettyPrinting().create().toJson(walks));
+                },
                 Util::logThrowable
         ));
 

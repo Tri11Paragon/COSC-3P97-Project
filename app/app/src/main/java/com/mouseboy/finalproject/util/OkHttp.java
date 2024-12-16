@@ -120,6 +120,24 @@ public class OkHttp {
         }, onFailure);
     }
 
+    public static <S> void postJson(Context context, String url, S data, OnResponse<Void> onResponse, OnFailure onFailure) {
+        Request request = new Request.Builder()
+                .url(url)
+                .post(RequestBody.create(new Gson().toJson(data), JSON))
+                .build();
+        enqueue(context, request, response -> {
+            try {
+                if(response.body() == null || response.body().string().isEmpty()){
+                    onResponse.onResponse(Void.TYPE.newInstance());
+                }else{
+                    onFailure.onFailure(new RuntimeException(response.body().string()));
+                }
+            } catch (Exception e) {
+                onFailure.onFailure(e);
+            }
+        }, onFailure);
+    }
+
     private static void enqueue(Context context, Request request, OnResponse<Response> onResponse, OnFailure onFailure) {
         CLIENT.newCall(request).enqueue(new Callback() {
             @Override
