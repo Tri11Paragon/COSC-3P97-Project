@@ -8,7 +8,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.gson.GsonBuilder;
 import com.mouseboy.finalproject.server.ServerApi;
 import com.mouseboy.finalproject.util.Gson;
@@ -56,6 +59,28 @@ public class MainActivity extends AppCompatActivity {
                 this::receiveReport,
                 Util::logThrowable
         ));
+
+        TabLayout tabLayout = findViewById(R.id.tabLayout);
+        ViewPager2 viewPager = findViewById(R.id.viewPager);
+
+        PagerAdaptor adapter = new PagerAdaptor(this);
+        viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(1, false);
+
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            // Set custom icons
+            switch (position) {
+                case 0:
+                    tab.setIcon(R.drawable.ic_launcher_background);
+                    break;
+                case 1:
+                    tab.setIcon(android.R.drawable.presence_away);
+                    break;
+                case 2:
+                    tab.setIcon(android.R.drawable.star_on);
+                    break;
+            }
+        }).attach();
     }
 
     private void receiveReport(WeatherApi.WeatherResult report) {
