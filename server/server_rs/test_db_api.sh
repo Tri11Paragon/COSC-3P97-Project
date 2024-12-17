@@ -37,7 +37,7 @@ echo
 echo "creating walk"
 w1=$(curl --silent "${str[@]}create_walk" --data '{"user_id": "hewwow", "walk": {"start": 0, "end": 7, "name": "howard", "rating": 0.9}, "conditions": []}')
 echo $w1
-w2=$(curl --silent "${str[@]}create_walk" --data '{"user_id": "hewwow", "walk": {"start": 10, "end": 15, "name": "asdfjkghaow8ry", "rating": 0.9}, "conditions": [{"time": 2, "lon": 2, "lat": 2, "conditions": {}}]}')
+w2=$(curl --silent "${str[@]}create_walk" --data '{"user_id": "hewwow", "walk": {"start": 10, "end": 15, "name": "asdfjkghaow8ry", "rating": 0.9}, "conditions": []}')
 echo $w2
 echo
 

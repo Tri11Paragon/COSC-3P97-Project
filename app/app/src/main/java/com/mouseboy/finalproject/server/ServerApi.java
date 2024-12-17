@@ -10,13 +10,12 @@ import com.mouseboy.finalproject.weather.WeatherApi;
 import java.util.Date;
 
 import okhttp3.Headers;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 
 public class ServerApi {
 
     public static final String SERVER = "http://10.100.135.154:8080/";
     public static final String SERVER_API_DB = SERVER+"api/db/";
+    public static final String SERVER_API_ANALYSIS = SERVER+"api/analysis/";
 
     public static final String HEADER = "x-meow";
     public static final String TOTALLY_MAGIC_MEOW_TOKEN = "this is a really absolutely secure token that will prevent all spam in user creation";
@@ -38,16 +37,22 @@ public class ServerApi {
 
     public static class AllWalkInfo{
         public String user_id;
-        public WalkInfo walk_info;
+        public WalkInfo walk;
         public WalkInstanceInfo[] conditions;
+
+        public AllWalkInfo(String user_id, WalkInfo walk, WalkInstanceInfo[] conditions) {
+            this.user_id = user_id;
+            this.walk = walk;
+            this.conditions = conditions;
+        }
     }
 
     public static class WalkInstanceInfo{
         @JsonAdapter(Gson.UnixTimestampAdapter.class)
         public Date time;
-        public float lon;
-        public float lat;
-        public WeatherApi.WeatherResult.CurrentWeather current;
+        public double lon;
+        public double lat;
+        public WeatherApi.WeatherResult.CurrentWeather conditions;
     }
 
     public static class WalkInfo{
@@ -58,12 +63,17 @@ public class ServerApi {
         public Date end;
         public String name;
         public String comment;
-        public float rating;
+        public double rating;
     }
 
     public static class WalkInfoId{
         public String user_id;
         public int walk_id;
+
+        public WalkInfoId(String user_id, int walk_id) {
+            this.user_id = user_id;
+            this.walk_id = walk_id;
+        }
     }
 
     public static class ListWalks{
@@ -84,7 +94,7 @@ public class ServerApi {
     public static class WalkInfoUpdate {
         public String user_id;
         public int walk_id;
-        public float rating;
+        public double rating;
         public String name;
         public String comment;
     }
@@ -189,6 +199,22 @@ public class ServerApi {
             id,
             response,
             error
+        );
+    }
+
+    public static class Meow{
+        public String user_id;
+        public WeatherApi.WeatherResult.CurrentWeather conditions;
+    }
+
+    public static void analyzeWalkConditions(Context context, Meow meow,  OkHttp.OnResponse<Float> response, OkHttp.OnFailure error){
+        postJson(
+                context,
+                SERVER_API_ANALYSIS + "analyze_walk_conditions",
+                meow,
+                Float.class,
+                response,
+                error
         );
     }
 }

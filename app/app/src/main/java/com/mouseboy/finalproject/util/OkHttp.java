@@ -27,7 +27,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class OkHttp {
-    private static final OkHttpClient CLIENT = new OkHttpClient();
+    private static final OkHttpClient CLIENT;
 
     static {
         OkHttpClient client = null;
@@ -65,7 +65,7 @@ public class OkHttp {
         } catch (Exception e) {
             Logger.getGlobal().log(Level.SEVERE, e.getMessage());
         }
-//        CLIENT = client;
+        CLIENT = client;
     }
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -131,6 +131,7 @@ public class OkHttp {
         enqueue(context, request, response -> {
             try {
                 String body = response.body() != null ? response.body().string() : "";
+                Logger.getGlobal().log(Level.INFO, body);
                 onResponse.onResponse(new Gson().fromJson(body, clazz));
             } catch (Exception e) {
                 onFailure.onFailure(e);
@@ -185,8 +186,39 @@ public class OkHttp {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) {
-                new Handler(context.getMainLooper()).post(() -> onResponse.onResponse(response));
+                if (response.code() == 200){
+                    new Handler(context.getMainLooper()).post(() -> onResponse.onResponse(response));
+                }else{
+                    new Handler(context.getMainLooper()).post(() -> {
+                        try {
+                            if(response.body() != null || !response.body().string().isEmpty()){
+                                onFailure.onFailure(new HttpException(response.code(), response.body().string()));
+                            }else{
+                                onFailure.onFailure(new HttpException(response.code(), ""));
+                            }
+                        } catch (IOException e) {
+                            onFailure.onFailure(e);
+                        }
+                    });
+                }
             }
         });
+    }
+
+    public static class HttpException extends Exception{
+        public final int code;
+
+        public HttpException(int code, String body) {
+            super(body);
+            this.code = code;
+        }
+
+        @Override
+        public String toString() {
+            return "HttpException{" +
+                "code=" + code +
+                ", message='" + getMessage() + '\'' +
+                '}';
+        }
     }
 }

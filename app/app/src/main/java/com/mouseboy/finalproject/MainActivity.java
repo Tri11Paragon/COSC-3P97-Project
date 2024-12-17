@@ -1,5 +1,6 @@
 package com.mouseboy.finalproject;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -11,7 +12,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.gson.GsonBuilder;
 import com.mouseboy.finalproject.server.ServerApi;
-import com.mouseboy.finalproject.util.Gson;
 import com.mouseboy.finalproject.util.Util;
 import com.mouseboy.finalproject.weather.LocationTracker;
 import com.mouseboy.finalproject.weather.WeatherApi;
@@ -42,19 +42,35 @@ public class MainActivity extends AppCompatActivity {
         });
 
         TextView textView = findViewById(R.id.textView);
-        findViewById(R.id.button).setOnClickListener(e -> ServerApi.listWalks(this,
-                new ServerApi.ListWalks("hewwow", new Date(0), new Date(Long.MAX_VALUE)),
-                walks -> {
-                    textView.setText(new GsonBuilder().setPrettyPrinting().create().toJson(walks));
-                },
-                Util::logThrowable
-        ));
+        findViewById(R.id.button).setOnClickListener(e -> {
+                Location current = LocationTracker.bestLocation();
+                ServerApi.AllWalkInfo walk = new ServerApi.AllWalkInfo("hewwow", new ServerApi.WalkInfo(), new ServerApi.WalkInstanceInfo[]{new ServerApi.WalkInstanceInfo()});
+                walk.walk.rating = 1.0;
+                walk.walk.start = new Date();
+                walk.walk.end = new Date();
+                walk.conditions[0].lat = current.getLatitude();
+                walk.conditions[0].lon = current.getLongitude();
+                walk.conditions[0].time = new Date();
+
+                WeatherApi.request(this, new WeatherApi.WeatherRequest(), conditions -> {
+                    walk.conditions[0].conditions = conditions.current;
+                    ServerApi.createWalk(this, walk, id -> {
+                        walk.walk.id = id;
+
+                        ServerApi.listWalkInfo(this, new ServerApi.WalkInfoId("hewwow", walk.walk.id), ok -> {
+                            textView.setText(new GsonBuilder().setPrettyPrinting().create().toJson(ok));
+                        }, Util::logThrowable);
+                    }, Util::logThrowable);
+                }, Util::logThrowable);
+
+            }
+        );
 
         textView2 = findViewById(R.id.textView2);
         findViewById(R.id.button2).setOnClickListener(e -> WeatherApi.request(this,
-                new WeatherApi.WeatherRequest(),
-                this::receiveReport,
-                Util::logThrowable
+            new WeatherApi.WeatherRequest(),
+            this::receiveReport,
+            Util::logThrowable
         ));
     }
 
@@ -64,10 +80,10 @@ public class MainActivity extends AppCompatActivity {
         for (Field field : fields) {
             try {
                 blah
-                        .append(field.getName())
-                        .append(": ")
-                        .append(field.get(report.current))
-                        .append("\n");
+                    .append(field.getName())
+                    .append(": ")
+                    .append(field.get(report.current))
+                    .append("\n");
             } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }

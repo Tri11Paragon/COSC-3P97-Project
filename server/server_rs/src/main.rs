@@ -143,7 +143,7 @@ mod analysis_routes{
     #[derive(Debug, Serialize, Deserialize)]
     pub struct InstantInfo{
         pub(super) user_id: db::UserID,
-        pub(super) walk_id: db::WeatherInfo,
+        pub(super) conditions: db::WeatherInfo,
     }
 
     #[post("/analyze_walk_conditions")]

@@ -32,11 +32,12 @@ public class Gson {
     public static class NumericBooleanAdapter extends TypeAdapter<Boolean> {
         @Override
         public void write(JsonWriter out, Boolean value) throws IOException {
-            out.value(value ? 1 : 0);
+            out.value(value);
         }
 
         @Override
         public Boolean read(JsonReader in) throws IOException {
+            if (in.peek()==JsonToken.BOOLEAN) return in.nextBoolean();
             return in.nextInt() == 1;
         }
     }
