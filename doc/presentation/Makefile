@@ -1,4 +1,4 @@
-SHELL = /bin/bash
+SHELL = bash
 .ONESHELL:
 
 .PHONY: default watch build clean
