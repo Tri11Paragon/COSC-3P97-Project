@@ -75,7 +75,7 @@ public class OkHttp {
     }
 
     public interface OnFailure {
-        void onFailure(Exception e);
+        void onFailure(Throwable e);
     }
 
 
@@ -177,7 +177,13 @@ public class OkHttp {
         }, onFailure);
     }
 
-    private static void enqueue(Context context, Request request, OnResponse<Response> onResponse, OnFailure onFailure) {
+    private static void enqueue(Context context, Request request, OnResponse<Response> onResponse, OnFailure onFailure_) {
+        final OnFailure meow = onFailure_;
+        onFailure_ = error -> {
+            Util.logThrowable(error);
+            meow.onFailure(error);
+        };
+        final OnFailure onFailure = onFailure_;
         CLIENT.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {

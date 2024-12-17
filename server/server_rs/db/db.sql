@@ -5,12 +5,12 @@ PRAGMA foreign_keys = ON;
 --DROP TABLE IF EXISTS users;
 
 CREATE TABLE IF NOT EXISTS users (
-    user_id   VARCHAR(16) NOT NULL PRIMARY KEY,
+    user_id   VARCHAR(128) NOT NULL PRIMARY KEY,
     name TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS walk_info(
-    user_id   VARCHAR(16) NOT NULL,
+    user_id   VARCHAR(128) NOT NULL,
     walk_id  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     start_time INT8 NOT NULL,
     end_time INT8 NOT NULL,

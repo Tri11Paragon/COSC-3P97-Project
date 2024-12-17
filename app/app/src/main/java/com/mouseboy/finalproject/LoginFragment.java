@@ -18,6 +18,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
+import com.mouseboy.finalproject.server.ServerApi;
+import com.mouseboy.finalproject.util.OkHttp;
+import com.mouseboy.finalproject.util.Util;
+
 public class LoginFragment extends DialogFragment {
 
     @Nullable
@@ -42,19 +46,20 @@ public class LoginFragment extends DialogFragment {
             String username = usernameInput.getText().toString().trim();
             String password = passwordInput.getText().toString().trim();
 
-            // Mock validation for simplicity
-            if (!username.isEmpty() && !password.isEmpty()) {
-                // Successful login: Show a message or perform your logic
+            String mash = Util.mash(username, password);
+            ServerApi.getUser(getContext(), mash, data -> {
                 Toast.makeText(getContext(), "Login Successful", Toast.LENGTH_SHORT).show();
-                MainActivity.user_registered(requireActivity(), "Todo", "Todo");
+                MainActivity.user_registered(requireActivity(), username, password);
+                MainActivity.receiveUserData(data);
                 MainActivity.switch_to_main(requireActivity());
-
-                // Dismiss the dialog
                 dismiss();
-            } else {
-                // Error case
-                Toast.makeText(getContext(), "Invalid credentials", Toast.LENGTH_SHORT).show();
-            }
+            }, error -> {
+                if(error instanceof OkHttp.HttpException){
+                    Toast.makeText(getContext(), "Already exists", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                }
+            });
         });
     }
 

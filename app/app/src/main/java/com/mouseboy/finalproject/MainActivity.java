@@ -24,6 +24,10 @@ import com.mouseboy.finalproject.weather.LocationTracker;
 import com.mouseboy.finalproject.weather.WeatherApi;
 
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,12 +51,26 @@ public class MainActivity extends AppCompatActivity {
         });
 
         SharedPreferences prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
-        boolean isRegistered = prefs.getBoolean("is_registered", false);
-
-        if (!isRegistered)
+        if(prefs.contains("username") && prefs.contains("password")){
+            String username = prefs.getString("username", "");
+            String password = prefs.getString("password", "");
+            ServerApi.getUser(
+                this, Util.mash(username, password),
+                data -> {
+                    receiveUserData(data);
+                    switch_to_main(this);
+                },
+                error -> switch_to_register(this)
+            );
+        }else{
             switch_to_register(this);
-        else
-            switch_to_main(this);
+        }
+    }
+
+    private static String displayName = "";
+
+    public static void receiveUserData(ServerApi.User data){
+        displayName = data.name;
     }
 
     private void showFragment(Fragment fragment) {
@@ -64,12 +82,12 @@ public class MainActivity extends AppCompatActivity {
 
     static void user_registered(Activity context, String username, String token) {
         SharedPreferences prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
-        prefs.edit().putBoolean("is_registered", true).putString("username", username).putString("token", token).apply();
+        prefs.edit().putString("username", username).putString("token", token).apply();
     }
 
     static void user_logout(Activity context){
         SharedPreferences prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
-        prefs.edit().remove("is_registered").remove("username").remove("token").apply();
+        prefs.edit().remove("username").remove("token").apply();
     }
 
     static void switch_to_main(FragmentActivity activity){
