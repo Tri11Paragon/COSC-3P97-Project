@@ -28,12 +28,12 @@ public class AuthHandlerFragment extends Fragment {
 
         // Show Login Dialog when login button is clicked
         btnLogin.setOnClickListener(v -> {
-            LoginFragment.open_login(requireActivity().getSupportFragmentManager());
+            LoginFragment.open_login(requireActivity());
         });
 
         // Show Registration Dialog when register button is clicked
         btnRegister.setOnClickListener(v -> {
-            RegistrationFragment.open_registration(requireActivity().getSupportFragmentManager());
+            RegistrationFragment.open_registration(requireActivity());
         });
     }
 
