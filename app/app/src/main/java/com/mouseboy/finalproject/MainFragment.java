@@ -1,5 +1,6 @@
 package com.mouseboy.finalproject;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,13 +41,29 @@ public class MainFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         TextView textView = view.findViewById(R.id.textView);
-        view.findViewById(R.id.button).setOnClickListener(e -> ServerApi.listWalks(requireContext(),
-            new ServerApi.ListWalks("hewwow", new Date(0), new Date(Long.MAX_VALUE)),
-            walks -> {
-                textView.setText(new GsonBuilder().setPrettyPrinting().create().toJson(walks));
-            },
-            Util::logThrowable
-        ));
+        view.findViewById(R.id.button).setOnClickListener(e -> {
+                Location current = LocationTracker.bestLocation();
+                ServerApi.AllWalkInfo walk = new ServerApi.AllWalkInfo("hewwow", new ServerApi.WalkInfo(), new ServerApi.WalkInstanceInfo[]{new ServerApi.WalkInstanceInfo()});
+                walk.walk.rating = 1.0;
+                walk.walk.start = new Date();
+                walk.walk.end = new Date();
+                walk.conditions[0].lat = current.getLatitude();
+                walk.conditions[0].lon = current.getLongitude();
+                walk.conditions[0].time = new Date();
+
+                WeatherApi.request(requireContext(), new WeatherApi.WeatherRequest(), conditions -> {
+                    walk.conditions[0].conditions = conditions.current;
+                    ServerApi.createWalk(requireContext(), walk, id -> {
+                        walk.walk.id = id;
+
+                        ServerApi.listWalkInfo(requireContext(), new ServerApi.WalkInfoId("hewwow", walk.walk.id), ok -> {
+                            textView.setText(new GsonBuilder().setPrettyPrinting().create().toJson(ok));
+                        }, Util::logThrowable);
+                    }, Util::logThrowable);
+                }, Util::logThrowable);
+
+            }
+        );
 
         textView2 = view.findViewById(R.id.textView2);
         view.findViewById(R.id.button2).setOnClickListener(e -> WeatherApi.request(requireContext(),

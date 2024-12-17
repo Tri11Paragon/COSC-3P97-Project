@@ -28,11 +28,13 @@ CREATE TABLE IF NOT EXISTS walk_info(
 
 
 CREATE TABLE IF NOT EXISTS walk_instant_info(
-    walk_id INT NOT NULL,
+    walk_id INTEGER NOT NULL,
     inst_time INT8 NOT NULL,
 
     lon REAL NOT NULL,
     lat REAL NOT NULL,
+
+    conditions BLOB NOT NULL,
 
     FOREIGN KEY (walk_id) 
       REFERENCES walk_info (walk_id) 

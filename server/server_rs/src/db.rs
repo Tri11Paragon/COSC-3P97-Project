@@ -2,7 +2,7 @@
 // https://github.com/actix/examples/tree/master/databases/sqlite
 
 use actix_web::{error, web, Error};
-use rusqlite::{named_params, Params, Statement};
+use rusqlite::{named_params, types::FromSqlError, Params, Statement};
 use serde::{Deserialize, Serialize};
 
 pub type Pool = r2d2::Pool<r2d2_sqlite::SqliteConnectionManager>;
@@ -39,7 +39,24 @@ pub struct WalkInstantInfo{
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct WeatherInfo{}
+pub struct WeatherInfo{
+    pub time: UnixTime,
+    pub interval: u64,
+    pub temperature_2m: f64,
+    pub relative_humidity: f64,
+    pub apparent_temperature: f64,
+    pub is_day: bool,
+    pub precipitation: f64,
+    pub rain: f64,
+    pub showers: f64,
+    pub snowfall: f64,
+    pub weather_code: u32,
+    pub pressure_msl: f64,
+    pub surface_pressure: f64,
+    pub wind_speed_10m: f64,
+    pub wind_direction_10m: f64,
+    pub wind_gusts_10m: f64,
+}
 
 async fn get_conn<F, T>(pool: &Pool, func: F) -> Result<T, Error>
         where 
@@ -97,11 +114,12 @@ pub async fn create_walk(pool: &Pool, user_id: UserID, walk: WalkInfo, condition
 
             let mut stmt = trans.prepare_cached("
             --PRAGMA foreign_keys = ON;
-            INSERT INTO walk_instant_info(walk_id, inst_time, lon, lat)
-            VALUES(:walk_id, :inst_time, :lon, :lat);"
+            INSERT INTO walk_instant_info(walk_id, inst_time, lon, lat, conditions)
+            VALUES(:walk_id, :inst_time, :lon, :lat, :conditions);"
             )?;
             for condition in conditions{
-                let updated = stmt.execute(named_params![":walk_id": id, ":inst_time": condition.time, ":lon": condition.lon, ":lat": condition.lat])?;
+                let json = serde_json::to_string(&condition.conditions).unwrap();
+                let updated = stmt.execute(named_params![":walk_id": id, ":inst_time": condition.time, ":lon": condition.lon, ":lat": condition.lat, ":conditions": json])?;
                 if updated != 1{
                     return Err(rusqlite::Error::InvalidQuery)
                 }
@@ -241,9 +259,10 @@ pub async fn list_walk_info(pool: &Pool, user_id: UserID, walk_id: DbId) -> Resu
         let stmt = conn.prepare(
             "
             --PRAGMA foreign_keys = ON;
-            SELECT inst_time, lon, lat, walk_info.walk_id, walk_info.user_id 
+            SELECT inst_time, lon, lat, conditions 
             FROM walk_instant_info
-            INNER JOIN walk_info ON walk_info.walk_id=walk_instant_info.walk_id AND user_id = :user_id AND walk_instant_info.walk_id = :walk_id
+            INNER JOIN walk_info ON walk_info.walk_id=walk_instant_info.walk_id AND user_id = :user_id
+            WHERE walk_instant_info.walk_id = :walk_id
             ORDER BY
                 inst_time ASC
         ",
@@ -258,8 +277,9 @@ fn make_list_walk_info(mut stmt: Statement, params: impl Params) -> DbResult<Vec
             time: row.get(0)?,
             lon: row.get(1)?, 
             lat: row.get(2)?,
-            conditions: WeatherInfo { 
-            },
+            conditions: serde_json::from_str(&row.get::<_, String>(3)?)
+                        .map_err(Box::new)
+                        .map_err(|arg0: std::boxed::Box<serde_json::Error>| FromSqlError::Other(arg0))?,
         })
     })?.collect()
 }

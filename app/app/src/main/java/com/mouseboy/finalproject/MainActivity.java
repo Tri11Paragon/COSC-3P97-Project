@@ -19,7 +19,6 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.gson.GsonBuilder;
 import com.mouseboy.finalproject.server.ServerApi;
-import com.mouseboy.finalproject.util.Gson;
 import com.mouseboy.finalproject.util.Util;
 import com.mouseboy.finalproject.weather.LocationTracker;
 import com.mouseboy.finalproject.weather.WeatherApi;
