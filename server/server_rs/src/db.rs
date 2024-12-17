@@ -2,7 +2,7 @@
 // https://github.com/actix/examples/tree/master/databases/sqlite
 
 use actix_web::{error, web, Error};
-use rusqlite::{named_params, Statement};
+use rusqlite::{named_params, Params, Statement};
 use serde::{Deserialize, Serialize};
 
 pub type Pool = r2d2::Pool<r2d2_sqlite::SqliteConnectionManager>;
@@ -39,8 +39,7 @@ pub struct WalkInstantInfo{
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct WeatherInfo{
-}
+pub struct WeatherInfo{}
 
 async fn get_conn<F, T>(pool: &Pool, func: F) -> Result<T, Error>
         where 
@@ -209,20 +208,21 @@ pub async fn delete_user(pool: &Pool, user_id: UserID) -> Result<(), Error> {
 }
 
 
-pub async fn list_walks(pool: &Pool, user_id: UserID) -> Result<Vec<WalkInfo>, Error> {
+pub async fn list_walks(pool: &Pool, user_id: UserID, start: UnixTime, end: UnixTime) -> Result<Vec<WalkInfo>, Error> {
     get_conn(pool, move |conn| {
         let stmt = conn.prepare(
             "
             --PRAGMA foreign_keys = ON;
         SELECT walk_id, start_time, end_time, name, comment, rating FROM walk_info
-            WHERE user_id = :user_id",
+            WHERE user_id = :user_id AND :start <= start_time AND start_time <= :end 
+            ORDER BY start_time DESC;",
         )?;
-        make_list_walks(stmt, user_id)
+        make_list_walks(stmt, named_params![":user_id": user_id, ":start": start, ":end": end])
     }).await
 }
 
-fn make_list_walks(mut stmt: Statement, user_id: UserID) -> DbResult<Vec<WalkInfo>>{
-    stmt.query_map(named_params![":user_id": user_id], |row| {
+fn make_list_walks(mut stmt: Statement, params: impl Params) -> DbResult<Vec<WalkInfo>>{
+    stmt.query_map(params, |row| {
         Ok(WalkInfo {
             id: Some(row.get(0)?),
             start: row.get(1)?,
@@ -248,12 +248,12 @@ pub async fn list_walk_info(pool: &Pool, user_id: UserID, walk_id: DbId) -> Resu
                 inst_time ASC
         ",
         )?;
-        make_list_walk_info(stmt, user_id, walk_id)
+        make_list_walk_info(stmt, named_params![":user_id": user_id, ":walk_id": walk_id])
     }).await
 }
 
-fn make_list_walk_info(mut stmt: Statement, user_id: UserID, walk_id: DbId) -> DbResult<Vec<WalkInstantInfo>>{
-    stmt.query_map(named_params![":user_id": user_id, ":walk_id": walk_id], |row| {
+fn make_list_walk_info(mut stmt: Statement, params: impl Params) -> DbResult<Vec<WalkInstantInfo>>{
+    stmt.query_map(params, |row| {
         Ok(WalkInstantInfo {
             time: row.get(0)?,
             lon: row.get(1)?, 

@@ -1,6 +1,6 @@
 pub mod db;
 
-use actix_web::{get, post, web, App, Error, HttpResponse, HttpServer, Responder};
+use actix_web::{get, guard, post, web, App, Error, HttpResponse, HttpServer, Responder};
 use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
 use serde::{Deserialize, Serialize};
@@ -81,17 +81,25 @@ mod db_routes{
         ))
     }
 
+    #[derive(Debug, Serialize, Deserialize)]
+    pub struct ListWalks{
+        user_id: db::UserID,
+        start: db::UnixTime,
+        end: db::UnixTime,
+    }
+
     #[post("/list_walks")]
-    pub async fn list_walks(db: web::Data<db::Pool>, user_id: web::Json<db::UserID>) -> Result<HttpResponse, Error> {
+    pub async fn list_walks(db: web::Data<db::Pool>, list_walks: web::Json<ListWalks>) -> Result<HttpResponse, Error> {
+        let list_walks = list_walks.0;
         Ok(HttpResponse::Ok().json(
-            db::list_walks(&db, user_id.0).await?
+            db::list_walks(&db, list_walks.user_id, list_walks.start, list_walks.end).await?
         ))
     }
 
     #[derive(Debug, Serialize, Deserialize)]
     pub struct WalkInfoId{
-        user_id: db::UserID,
-        walk_id: db::DbId,
+        pub(super) user_id: db::UserID,
+        pub(super) walk_id: db::DbId,
     }
 
     #[post("/delete_walk")]
@@ -129,10 +137,31 @@ mod db_routes{
     }
 }
 
+mod analysis_routes{
+    use super::*;
+
+    #[derive(Debug, Serialize, Deserialize)]
+    pub struct InstantInfo{
+        pub(super) user_id: db::UserID,
+        pub(super) walk_id: db::WeatherInfo,
+    }
+
+    #[post("/analyze_walk_conditions")]
+    pub async fn analyze_walk_conditions(_db: web::Data<db::Pool>, _walk_info: web::Json<InstantInfo>) -> Result<HttpResponse, Error> {
+        let number = 1.0;
+        Ok(HttpResponse::Ok().json(number))
+    }
+}
+
 fn api_config(cfg: &mut web::ServiceConfig) {
-    cfg.service(
-        web::scope("/db").configure(db_config)
-    );
+    cfg
+    .service(web::scope("/db").configure(db_config))
+    .service(web::scope("/analysis").configure(analysis_config));
+}
+
+fn analysis_config(cfg: &mut web::ServiceConfig) {
+    cfg
+        .service(analysis_routes::analyze_walk_conditions);
 }
 
 fn db_config(cfg: &mut web::ServiceConfig) {
@@ -148,6 +177,7 @@ fn db_config(cfg: &mut web::ServiceConfig) {
         .service(db_routes::delete_walk);
 }
 
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let manager = SqliteConnectionManager::file("weather.db");
@@ -160,7 +190,11 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || 
             App::new()
                 .app_data(web::Data::new(pool.clone()))
-                .service(web::scope("/api").configure(api_config))
+                .service(
+                    web::scope("/api")
+                        .configure(api_config)
+                        .guard(guard::Header("x-meow", "this is a really absolutely secure token that will prevent all spam in user creation"))
+                    )
                 .service(hello)
                 .service(echo)
                 .service(meow)

@@ -1,5 +1,5 @@
 
-str=(-H "content-type: application/json" -X POST localhost:8080/api/db/)
+str=(-H "content-type: application/json" -H "x-meow: this is a really absolutely secure token that will prevent all spam in user creation" -X POST localhost:8080/api/db/)
 
 echo "deleting"
 curl "${str[@]}delete_user" --data '"hewwow"' 
@@ -35,15 +35,15 @@ echo
 
 echo
 echo "creating walk"
-w1=$(curl --silent "${str[@]}create_walk" --data '{"user_id": "hewwow", "walk": {"start": 0, "end": 0, "name": "howard", "rating": 0.9}, "conditions": []}')
+w1=$(curl --silent "${str[@]}create_walk" --data '{"user_id": "hewwow", "walk": {"start": 0, "end": 7, "name": "howard", "rating": 0.9}, "conditions": []}')
 echo $w1
-w2=$(curl --silent "${str[@]}create_walk" --data '{"user_id": "hewwow", "walk": {"start": 0, "end": 0, "name": "asdfjkghaow8ry", "rating": 0.9}, "conditions": [{"time": 2, "lon": 2, "lat": 2, "conditions": {}}]}')
+w2=$(curl --silent "${str[@]}create_walk" --data '{"user_id": "hewwow", "walk": {"start": 10, "end": 15, "name": "asdfjkghaow8ry", "rating": 0.9}, "conditions": [{"time": 2, "lon": 2, "lat": 2, "conditions": {}}]}')
 echo $w2
 echo
 
 echo
 echo "get walks"
-curl "${str[@]}list_walks" --data '"hewwow"'
+curl "${str[@]}list_walks" --data '{"user_id": "hewwow", "start": 0, "end": 1}'
 echo
 
 
@@ -62,7 +62,7 @@ echo
 
 echo
 echo "get walks"
-curl "${str[@]}list_walks" --data '"hewwow"'
+curl "${str[@]}list_walks" --data '{"user_id": "hewwow", "start": 0, "end": 1}'
 echo
 
 
@@ -73,5 +73,5 @@ echo
 
 echo
 echo "get walks"
-curl "${str[@]}list_walks" --data '"hewwow"'
+curl "${str[@]}list_walks" --data '{"user_id": "hewwow", "start": 0, "end": 500}'
 echo

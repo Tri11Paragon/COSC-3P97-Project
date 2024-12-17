@@ -17,6 +17,7 @@ import com.mouseboy.finalproject.weather.LocationTracker;
 import com.mouseboy.finalproject.weather.WeatherApi;
 
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
         TextView textView = findViewById(R.id.textView);
         findViewById(R.id.button).setOnClickListener(e -> ServerApi.listWalks(this,
-                "hewwow",
+                new ServerApi.ListWalks("hewwow", new Date(0), new Date(Long.MAX_VALUE)),
                 walks -> {
                     textView.setText(new GsonBuilder().setPrettyPrinting().create().toJson(walks));
                 },

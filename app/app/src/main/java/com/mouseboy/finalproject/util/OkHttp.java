@@ -19,6 +19,7 @@ import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -26,7 +27,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class OkHttp {
-    private static final OkHttpClient CLIENT;
+    private static final OkHttpClient CLIENT = new OkHttpClient();
 
     static {
         OkHttpClient client = null;
@@ -64,7 +65,7 @@ public class OkHttp {
         } catch (Exception e) {
             Logger.getGlobal().log(Level.SEVERE, e.getMessage());
         }
-        CLIENT = client;
+//        CLIENT = client;
     }
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -120,10 +121,47 @@ public class OkHttp {
         }, onFailure);
     }
 
+    public static <S, T> void postJson(Context context, String url, S data, Class<T> clazz, Headers headers, OnResponse<T> onResponse, OnFailure onFailure) {
+        Request request = new Request.Builder()
+                .url(url)
+                .post(RequestBody.create(new Gson().toJson(data), null))
+                .headers(headers)
+                .addHeader("content-type", "application/json")
+                .build();
+        enqueue(context, request, response -> {
+            try {
+                String body = response.body() != null ? response.body().string() : "";
+                onResponse.onResponse(new Gson().fromJson(body, clazz));
+            } catch (Exception e) {
+                onFailure.onFailure(e);
+            }
+        }, onFailure);
+    }
+
     public static <S> void postJson(Context context, String url, S data, OnResponse<Void> onResponse, OnFailure onFailure) {
         Request request = new Request.Builder()
                 .url(url)
                 .post(RequestBody.create(new Gson().toJson(data), JSON))
+                .build();
+        enqueue(context, request, response -> {
+            try {
+                if(response.body() == null || response.body().string().isEmpty()){
+                    onResponse.onResponse(Void.TYPE.newInstance());
+                }else{
+                    onFailure.onFailure(new RuntimeException(response.body().string()));
+                }
+            } catch (Exception e) {
+                onFailure.onFailure(e);
+            }
+        }, onFailure);
+    }
+
+    public static <S> void postJson(Context context, String url, S data, Headers headers, OnResponse<Void> onResponse, OnFailure onFailure) {
+        Request request = new Request.Builder()
+                .url(url)
+                .post(RequestBody.create(new Gson().toJson(data), null))
+                .headers(headers)
+                .addHeader("content-type", "application/json")
                 .build();
         enqueue(context, request, response -> {
             try {
