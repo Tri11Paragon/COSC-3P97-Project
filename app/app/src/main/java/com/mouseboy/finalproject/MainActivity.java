@@ -1,5 +1,8 @@
 package com.mouseboy.finalproject;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -8,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
@@ -26,8 +31,6 @@ import java.util.logging.Logger;
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView textView2;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,60 +47,43 @@ public class MainActivity extends AppCompatActivity {
             Logger.getGlobal().log(Level.INFO, "Lat/Long " + loc.getLatitude() + " " + loc.getLongitude());
         });
 
-        TextView textView = findViewById(R.id.textView);
-        findViewById(R.id.button).setOnClickListener(e -> ServerApi.listWalks(this,
-                new ServerApi.ListWalks("hewwow", new Date(0), new Date(Long.MAX_VALUE)),
-                walks -> {
-                    textView.setText(new GsonBuilder().setPrettyPrinting().create().toJson(walks));
-                },
-                Util::logThrowable
-        ));
+        SharedPreferences prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
+        boolean isRegistered = prefs.getBoolean("is_registered", false);
 
-        textView2 = findViewById(R.id.textView2);
-        findViewById(R.id.button2).setOnClickListener(e -> WeatherApi.request(this,
-                new WeatherApi.WeatherRequest(),
-                this::receiveReport,
-                Util::logThrowable
-        ));
-
-        TabLayout tabLayout = findViewById(R.id.tabLayout);
-        ViewPager2 viewPager = findViewById(R.id.viewPager);
-
-        PagerAdaptor adapter = new PagerAdaptor(this);
-        viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(1, false);
-
-        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-            // Set custom icons
-            switch (position) {
-                case 0:
-                    tab.setIcon(R.drawable.ic_launcher_background);
-                    break;
-                case 1:
-                    tab.setIcon(android.R.drawable.presence_away);
-                    break;
-                case 2:
-                    tab.setIcon(android.R.drawable.star_on);
-                    break;
-            }
-        }).attach();
+        if (!isRegistered)
+            switch_to_register(this);
+        else
+            switch_to_main(this);
     }
 
-    private void receiveReport(WeatherApi.WeatherResult report) {
-        Field[] fields = WeatherApi.WeatherResult.CurrentWeather.class.getFields();
-        StringBuilder blah = new StringBuilder();
-        for (Field field : fields) {
-            try {
-                blah
-                        .append(field.getName())
-                        .append(": ")
-                        .append(field.get(report.current))
-                        .append("\n");
-            } catch (IllegalAccessException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-        textView2.setText(blah.toString());
-        System.out.println(report);
+    private void showFragment(Fragment fragment) {
+        getSupportFragmentManager()
+            .beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit();
+    }
+
+    static void user_registered(Activity context, String username, String token) {
+        SharedPreferences prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
+        prefs.edit().putBoolean("is_registered", true).putString("username", username).putString("token", token).apply();
+    }
+
+    static void user_logout(Activity context){
+        SharedPreferences prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
+        prefs.edit().remove("is_registered").remove("username").remove("token").apply();
+    }
+
+    static void switch_to_main(FragmentActivity activity){
+        activity.getSupportFragmentManager()
+            .beginTransaction()
+            .replace(R.id.fragment_container, new MainFragment())
+            .commit();
+    }
+
+    static void switch_to_register(FragmentActivity activity){
+        activity.getSupportFragmentManager()
+            .beginTransaction()
+            .replace(R.id.fragment_container, new AuthHandlerFragment())
+            .commit();
     }
 }
