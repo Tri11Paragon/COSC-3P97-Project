@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 public class RegistrationFragment extends DialogFragment {
@@ -45,9 +46,10 @@ public class RegistrationFragment extends DialogFragment {
         return com.google.android.material.R.style.Theme_Material3_Dark_Dialog;
     }
 
-    static void open_registration(FragmentManager manager){
+    static void open_registration(FragmentActivity activity){
         RegistrationFragment registrationFragment = new RegistrationFragment();
-        registrationFragment.setCancelable(false);
-        registrationFragment.show(manager, "RegistrationFragment");
+//        registrationFragment.setCancelable(false);
+//        registrationFragment.show(manager, "RegistrationFragment");
+        MainActivity.switchToFragment(activity, registrationFragment);
     }
 }

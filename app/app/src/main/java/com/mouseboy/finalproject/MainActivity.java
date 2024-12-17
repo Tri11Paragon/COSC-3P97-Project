@@ -55,31 +55,32 @@ public class MainActivity extends AppCompatActivity {
             switch_to_main(this);
     }
 
-    private void showFragment(Fragment fragment) {
-        getSupportFragmentManager()
+    public static void switchToFragment(FragmentActivity activity, Fragment fragment) {
+        activity.getSupportFragmentManager()
             .beginTransaction()
             .replace(R.id.fragment_container, fragment)
+            .addToBackStack("fragment.swtich")
             .commit();
     }
 
-    static void user_registered(Activity context, String username, String token) {
+    public static void user_registered(Activity context, String username, String token) {
         SharedPreferences prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
         prefs.edit().putBoolean("is_registered", true).putString("username", username).putString("token", token).apply();
     }
 
-    static void user_logout(Activity context){
+    public static void user_logout(Activity context){
         SharedPreferences prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
         prefs.edit().remove("is_registered").remove("username").remove("token").apply();
     }
 
-    static void switch_to_main(FragmentActivity activity){
+    public static void switch_to_main(FragmentActivity activity){
         activity.getSupportFragmentManager()
             .beginTransaction()
             .replace(R.id.fragment_container, new MainFragment())
             .commit();
     }
 
-    static void switch_to_register(FragmentActivity activity){
+    public static void switch_to_register(FragmentActivity activity){
         activity.getSupportFragmentManager()
             .beginTransaction()
             .replace(R.id.fragment_container, new AuthHandlerFragment())
