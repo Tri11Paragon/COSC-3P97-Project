@@ -1,9 +1,13 @@
 package com.mouseboy.finalproject;
 
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -40,12 +44,35 @@ public class HomePage extends Fragment {
         return new HomePage();
     }
 
+    private volatile boolean granted = false;
+    private ActivityResultLauncher<String[]> requester;
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
 
-        }
+        Runnable reqPerms = () -> requester.launch(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION});
+
+        requester = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), g -> {
+            boolean g2 = true;
+            for (boolean entry : g.values()) {
+                g2 &= entry;
+            }
+            if (!g2) {
+                new AlertDialog.Builder(requireContext())
+                    .setTitle("Permission Needed")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", (dialog, which) -> reqPerms.run()).create().show();
+            } else {
+                permsGranted();
+            }
+        });
+        reqPerms.run();
+    }
+
+    private void permsGranted(){
+        granted=true;
     }
 
     @Override
@@ -54,56 +81,15 @@ public class HomePage extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_home_page, container, false);
 
-//        TextView textView = view.findViewById(R.id.textView);
-//        view.findViewById(R.id.button).setOnClickListener(e -> {
-//                Location current = LocationTracker.bestLocation();
-//                ServerApi.AllWalkInfo walk = new ServerApi.AllWalkInfo("hewwow", new ServerApi.WalkInfo(), new ServerApi.WalkInstanceInfo[]{new ServerApi.WalkInstanceInfo()});
-//                walk.walk.rating = 1.0;
-//                walk.walk.start = new Date();
-//                walk.walk.end = new Date();
-//                walk.conditions[0].lat = current.getLatitude();
-//                walk.conditions[0].lon = current.getLongitude();
-//                walk.conditions[0].time = new Date();
-//
-//                WeatherApi.request(requireContext(), new WeatherApi.WeatherRequest(), conditions -> {
-//                    walk.conditions[0].conditions = conditions.current;
-//                    ServerApi.createWalk(requireContext(), walk, id -> {
-//                        walk.walk.id = id;
-//
-//                        ServerApi.listWalkInfo(requireContext(), new ServerApi.WalkInfoId("hewwow", walk.walk.id), ok -> {
-//                            textView.setText(new GsonBuilder().setPrettyPrinting().create().toJson(ok));
-//                        }, Util::logThrowable);
-//                    }, Util::logThrowable);
-//                }, Util::logThrowable);
-//
-//            }
-//        );
-//
-//        textView2 = view.findViewById(R.id.textView2);
-//        view.findViewById(R.id.button2).setOnClickListener(e -> WeatherApi.request(requireContext(),
-//            new WeatherApi.WeatherRequest(),
-//            this::receiveReport,
-//            Util::logThrowable
-//        ));
-        // Inflate the layout for this fragment
-        return view;
-    }
-
-    private void receiveReport(WeatherApi.WeatherResult report) {
-        Field[] fields = WeatherApi.WeatherResult.CurrentWeather.class.getFields();
-        StringBuilder blah = new StringBuilder();
-        for (Field field : fields) {
-            try {
-                blah
-                    .append(field.getName())
-                    .append(": ")
-                    .append(field.get(report.current))
-                    .append("\n");
-            } catch (IllegalAccessException ex) {
-                throw new RuntimeException(ex);
+        Button button = view.findViewById(R.id.startWalkButton);
+        button.setOnClickListener(e -> {
+            if(granted){
+                LocationTracker.startWithPerms(requireContext());
+                requireContext().startService(new Intent(requireContext(), WalkTrackingService.class));
+            }else{
+                Util.toast(requireContext(), "No Location Permissions");
             }
-        }
-        textView2.setText(blah.toString());
-        System.out.println(report);
+        });
+        return view;
     }
 }
