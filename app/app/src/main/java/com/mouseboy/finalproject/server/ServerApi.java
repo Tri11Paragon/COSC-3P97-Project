@@ -13,7 +13,7 @@ import okhttp3.Headers;
 
 public class ServerApi {
 
-    public static final String SERVER = "http://192.168.1.106:8080/";
+    public static final String SERVER = "http://10.100.203.115:8080/";
     public static final String SERVER_API_DB = SERVER+"api/db/";
     public static final String SERVER_API_ANALYSIS = SERVER+"api/analysis/";
 
