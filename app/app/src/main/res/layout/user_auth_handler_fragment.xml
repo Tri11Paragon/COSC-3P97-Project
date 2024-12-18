@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.mouseboy.finalproject.AnimatedBackgroundView2
+    <com.mouseboy.finalproject.AnimatedBackgroundView
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -16,39 +16,46 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:gravity="center"
             android:padding="16dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Login"
-                android:textSize="18sp"
-                android:layout_gravity="center_horizontal"
-                android:paddingBottom="8dp"
-                android:background="@color/white"/>
+                android:text="Please select an action"
+                android:background="@color/white"
+                android:textSize="24sp"
+                android:padding="6dp"
+                android:gravity="center">
+            </TextView>
 
-            <EditText
-                android:id="@+id/input_username"
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:autofillHints="username"
-                android:inputType="textPersonName"
-                android:hint="Username"/>
-
-            <EditText
-                android:id="@+id/input_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:autofillHints="password"
-                android:hint="Password"
-                android:inputType="textPassword"/>
+                android:layout_height="2dp"
+                android:layout_marginVertical="12dp"
+                android:background="@android:color/darker_gray"/>
 
             <Button
                 android:id="@+id/btn_login"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Login"
-                android:layout_marginTop="12dp" />
+                android:layout_marginBottom="12dp" />
+
+            <Button
+                android:id="@+id/btn_register"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:text="Register" />
+
+            <Button
+                android:id="@+id/no_account"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Continue Without Account" />
         </LinearLayout>
     </ScrollView>
 </FrameLayout>
+
+

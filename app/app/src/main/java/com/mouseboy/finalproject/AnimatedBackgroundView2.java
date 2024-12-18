@@ -4,8 +4,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
 
-import com.mouseboy.finalproject.weather.AnimatedBackgroundCommon;
-
 import java.util.Arrays;
 
 public class AnimatedBackgroundView2 extends AnimatedBackgroundCommon {

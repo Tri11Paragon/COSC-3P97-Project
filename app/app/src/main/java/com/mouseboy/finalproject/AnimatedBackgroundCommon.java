@@ -1,4 +1,4 @@
-package com.mouseboy.finalproject.weather;
+package com.mouseboy.finalproject;
 
 import android.content.Context;
 import android.graphics.Canvas;

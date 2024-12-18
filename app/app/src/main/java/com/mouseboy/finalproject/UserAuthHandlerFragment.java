@@ -10,13 +10,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-public class AuthHandlerFragment extends Fragment {
+public class UserAuthHandlerFragment extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.auth_handler_fragment, container, false);
+        return inflater.inflate(R.layout.user_auth_handler_fragment, container, false);
     }
 
     @Override
