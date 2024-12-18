@@ -5,7 +5,7 @@ services:
       context: ./
       dockerfile: Dockerfile
     container_name: cosc3p97-server
-    privileged: true
+    privileged: false
     cap_add:
       - NET_ADMIN
     environment:
