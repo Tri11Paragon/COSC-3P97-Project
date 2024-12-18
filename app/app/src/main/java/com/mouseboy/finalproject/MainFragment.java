@@ -27,8 +27,6 @@ import java.util.logging.Logger;
 
 public class MainFragment extends Fragment {
 
-    TextView textView2;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -39,38 +37,6 @@ public class MainFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        TextView textView = view.findViewById(R.id.textView);
-        view.findViewById(R.id.button).setOnClickListener(e -> {
-                Location current = LocationTracker.bestLocation();
-                ServerApi.AllWalkInfo walk = new ServerApi.AllWalkInfo("hewwow", new ServerApi.WalkInfo(), new ServerApi.WalkInstanceInfo[]{new ServerApi.WalkInstanceInfo()});
-                walk.walk.rating = 1.0;
-                walk.walk.start = new Date();
-                walk.walk.end = new Date();
-                walk.conditions[0].lat = current.getLatitude();
-                walk.conditions[0].lon = current.getLongitude();
-                walk.conditions[0].time = new Date();
-
-                WeatherApi.request(requireContext(), new WeatherApi.WeatherRequest(), conditions -> {
-                    walk.conditions[0].conditions = conditions.current;
-                    ServerApi.createWalk(requireContext(), walk, id -> {
-                        walk.walk.id = id;
-
-                        ServerApi.listWalkInfo(requireContext(), new ServerApi.WalkInfoId("hewwow", walk.walk.id), ok -> {
-                            textView.setText(new GsonBuilder().setPrettyPrinting().create().toJson(ok));
-                        }, Util::logThrowable);
-                    }, Util::logThrowable);
-                }, Util::logThrowable);
-
-            }
-        );
-
-        textView2 = view.findViewById(R.id.textView2);
-        view.findViewById(R.id.button2).setOnClickListener(e -> WeatherApi.request(requireContext(),
-            new WeatherApi.WeatherRequest(),
-            this::receiveReport,
-            Util::logThrowable
-        ));
 
         TabLayout tabLayout = view.findViewById(R.id.tabLayout);
         ViewPager2 viewPager = view.findViewById(R.id.viewPager);
@@ -93,23 +59,5 @@ public class MainFragment extends Fragment {
                     break;
             }
         }).attach();
-    }
-
-    private void receiveReport(WeatherApi.WeatherResult report) {
-        Field[] fields = WeatherApi.WeatherResult.CurrentWeather.class.getFields();
-        StringBuilder blah = new StringBuilder();
-        for (Field field : fields) {
-            try {
-                blah
-                    .append(field.getName())
-                    .append(": ")
-                    .append(field.get(report.current))
-                    .append("\n");
-            } catch (IllegalAccessException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-        textView2.setText(blah.toString());
-        System.out.println(report);
     }
 }
