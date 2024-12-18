@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.mouseboy.finalproject.server.Local;
 import com.mouseboy.finalproject.server.ServerApi;
 import com.mouseboy.finalproject.util.Util;
 
@@ -40,10 +41,10 @@ public class LoginFragment extends DialogFragment {
             String password = passwordInput.getText().toString().trim();
 
             String mash = Util.mash(username, password);
-            ServerApi.getUser(getContext(), mash, data -> {
+            ServerApi.getUser(getContext(), mash, user -> {
                 Util.toast(getContext(), "Login Successful");
                 MainActivity.user_registered(requireActivity(), username, password);
-                MainActivity.receiveUserData(data);
+                Local.login(user);
                 MainActivity.switchToUserHome(requireActivity());
                 dismiss();
             }, Util.toastFail(getContext(), "Invalid Login"));

@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.mouseboy.finalproject.server.Local;
 import com.mouseboy.finalproject.server.ServerApi;
 import com.mouseboy.finalproject.util.OkHttp;
 import com.mouseboy.finalproject.util.Util;
@@ -46,7 +47,7 @@ public class RegistrationFragment extends DialogFragment {
             ServerApi.createUser(getContext(), user, _void -> {
                 Util.toast(getContext(), "Account Creation Successful");
                 MainActivity.user_registered(requireActivity(), username, password);
-                MainActivity.receiveUserData(user);
+                Local.login(user);
                 MainActivity.switchToUserHome(requireActivity());
                 dismiss();
             }, error -> {
