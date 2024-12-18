@@ -21,7 +21,6 @@ public class AccountManagementFragment extends Fragment {
 
     }
 
-
     public static AccountManagementFragment newInstance() {
         AccountManagementFragment fragment = new AccountManagementFragment();
         Bundle args = new Bundle();
@@ -43,6 +42,11 @@ public class AccountManagementFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_account_management, container, false);
+
+        if (!Local.isUserLoggedIn()) {
+            MainActivity.switchToNotLoggedIn(requireActivity());
+            return view;
+        }
 
         name = view.findViewById(R.id.name);
         view.findViewById(R.id.update_name).setOnClickListener(e -> ServerApi.updateUser(

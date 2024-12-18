@@ -22,10 +22,7 @@ public class PagerAdaptor extends FragmentStateAdapter {
             case 1:
                 return HomePage.newInstance();
             case 2:
-                if (Local.isUserLoggedIn())
-                    return AccountManagementFragment.newInstance();
-                else
-                    return UserAuthHandlerFragment.newInstance();
+                return AccountManagementFragment.newInstance();
         }
         return HomePage.newInstance();
     }

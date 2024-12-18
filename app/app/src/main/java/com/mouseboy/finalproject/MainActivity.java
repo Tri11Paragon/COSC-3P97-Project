@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void switchToFragment(FragmentActivity activity, Fragment fragment) {
-        activity.getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        activity.getSupportFragmentManager().popBackStack("fragment.switch", FragmentManager.POP_BACK_STACK_INCLUSIVE);
         activity.getSupportFragmentManager()
             .beginTransaction()
             .replace(R.id.fragment_container, fragment)
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         activity.getSupportFragmentManager()
             .beginTransaction()
             .replace(R.id.fragment_container, fragment)
-            .addToBackStack(null)
+            .addToBackStack("fragment.switch")
             .commit();
     }
 

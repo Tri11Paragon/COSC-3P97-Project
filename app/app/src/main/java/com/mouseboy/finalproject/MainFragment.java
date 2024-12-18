@@ -55,7 +55,7 @@ public class MainFragment extends Fragment {
                     tab.setIcon(android.R.drawable.star_big_on);
                     break;
                 case 2:
-                    tab.setIcon(android.R.drawable.star_on);
+                    tab.setIcon(android.R.drawable.ic_menu_myplaces);
                     break;
             }
         }).attach();
