@@ -55,11 +55,4 @@ public class LoginFragment extends DialogFragment {
     public int getTheme() {
         return com.google.android.material.R.style.Theme_Material3_Dark_Dialog;
     }
-
-    static void open_login(FragmentActivity activity){
-        LoginFragment loginFragment = new LoginFragment();
-//        loginFragment.setCancelable(false);
-//        loginFragment.show(manager, "LoginFragment");
-        MainActivity.switchToFragment(activity, loginFragment);
-    }
 }

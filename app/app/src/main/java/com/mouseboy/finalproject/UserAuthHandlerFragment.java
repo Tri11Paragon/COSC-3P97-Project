@@ -25,6 +25,7 @@ public class UserAuthHandlerFragment extends Fragment {
 
         Button btnLogin = view.findViewById(R.id.btn_login);
         Button btnRegister = view.findViewById(R.id.btn_register);
+        Button btnContinue = view.findViewById(R.id.no_account);
 
         // Show Login Dialog when login button is clicked
         btnLogin.setOnClickListener(v -> {
@@ -34,6 +35,10 @@ public class UserAuthHandlerFragment extends Fragment {
         // Show Registration Dialog when register button is clicked
         btnRegister.setOnClickListener(v -> {
             MainActivity.pushFragment(getActivity(), new RegistrationFragment());
+        });
+
+        btnContinue.setOnClickListener(v -> {
+            MainActivity.pushFragment(getActivity(), new MainFragment());
         });
     }
 
