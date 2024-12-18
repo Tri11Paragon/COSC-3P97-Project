@@ -69,8 +69,12 @@ public class MainActivity extends AppCompatActivity {
         activity.getSupportFragmentManager()
             .beginTransaction()
             .replace(R.id.fragment_container, fragment)
-            .addToBackStack("fragment.swtich")
+            .addToBackStack("fragment.switch")
             .commit();
+    }
+
+    public static void popFragment(FragmentActivity activity){
+        activity.getSupportFragmentManager().popBackStack();
     }
 
     public static void switchToUserHome(FragmentActivity activity){
