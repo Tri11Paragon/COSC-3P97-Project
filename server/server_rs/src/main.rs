@@ -2,7 +2,7 @@ pub mod db;
 
 use std::{path::{Path, PathBuf}, str::FromStr};
 
-use actix_web::{get, guard, post, web, App, Error, HttpResponse, HttpServer, Responder};
+use actix_web::{get, guard, middleware::Logger, post, web, App, Error, HttpResponse, HttpServer, Responder};
 use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
 use serde::{Deserialize, Serialize};
@@ -179,11 +179,13 @@ fn db_config(cfg: &mut web::ServiceConfig) {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+    
     let path = std::env::var("DB_PATH")
         .map(PathBuf::from)
         .map(|mut v|{v.push("weather.db");v})
         .unwrap_or("weather.db".into());
-    
+
     let manager = SqliteConnectionManager::file(path);
     let pool = Pool::new(manager).unwrap();
     pool.get()
@@ -193,6 +195,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || 
             App::new()
+                .wrap(Logger::default())
                 .app_data(web::Data::new(pool.clone()))
                 .service(
                     web::scope("/api")
