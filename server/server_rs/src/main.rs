@@ -40,16 +40,14 @@ mod db_routes{
 
     #[post("/create_user")]
     pub async fn create_user(db: web::Data<db::Pool>, info: web::Json<db::User>) -> Result<HttpResponse, Error> {
-        Ok(HttpResponse::Ok().json(
-            db::create_user(&db, info.0).await?
-        ))
+        db::create_user(&db, info.0).await?;
+        Ok(HttpResponse::Ok().finish())
     }
 
     #[post("/update_user")]
     pub async fn update_user(db: web::Data<db::Pool>, info: web::Json<db::User>) -> Result<HttpResponse, Error> {
-        Ok(HttpResponse::Ok().json(
-            db::update_user(&db, info.0).await?
-        ))
+        db::update_user(&db, info.0).await?;
+        Ok(HttpResponse::Ok().finish())
     }
 
     #[post("/get_user")]
@@ -61,9 +59,8 @@ mod db_routes{
 
     #[post("/delete_user")]
     pub async fn delete_user(db: web::Data<db::Pool>, info: web::Json<db::UserID>) -> Result<HttpResponse, Error> {
-        Ok(HttpResponse::Ok().json(
-            db::delete_user(&db, info.0).await?
-        ))
+        db::delete_user(&db, info.0).await?;
+        Ok(HttpResponse::Ok().finish())
     }
 
     #[derive(Debug, Serialize, Deserialize)]
@@ -105,9 +102,9 @@ mod db_routes{
     #[post("/delete_walk")]
     pub async fn delete_walk(db: web::Data<db::Pool>, walk_info: web::Json<WalkInfoId>) -> Result<HttpResponse, Error> {
         let walk_info = walk_info.0;
-        Ok(HttpResponse::Ok().json(
-            db::delete_walk(&db, walk_info.user_id, walk_info.walk_id).await?
-        ))
+
+        db::delete_walk(&db, walk_info.user_id, walk_info.walk_id).await?;
+        Ok(HttpResponse::Ok().finish())
     }
 
     #[post("/list_walk_info")]
@@ -131,9 +128,8 @@ mod db_routes{
     #[post("/update_walk")]
     pub async fn update_walk(db: web::Data<db::Pool>, walk_info: web::Json<WalkInfoUpdate>) -> Result<HttpResponse, Error> {
         let walk_info = walk_info.0;
-        Ok(HttpResponse::Ok().json(
-            db::update_walk(&db, walk_info.user_id, walk_info.walk_id, walk_info.rating, walk_info.name, walk_info.comment).await?
-        ))
+        db::update_walk(&db, walk_info.user_id, walk_info.walk_id, walk_info.rating, walk_info.name, walk_info.comment).await?;
+        Ok(HttpResponse::Ok().finish())
     }
 }
 

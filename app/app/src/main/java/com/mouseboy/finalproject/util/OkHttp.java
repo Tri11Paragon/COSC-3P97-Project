@@ -146,10 +146,14 @@ public class OkHttp {
                 .build();
         enqueue(context, request, response -> {
             try {
-                if(response.body() == null || response.body().string().isEmpty()){
-                    onResponse.onResponse(Void.TYPE.newInstance());
-                }else{
-                    onFailure.onFailure(new RuntimeException(response.body().string()));
+                if(response.body() == null)
+                    onResponse.onResponse(null);
+                else{
+                    String body = response.body().string();
+                    if(body.isEmpty())
+                        onResponse.onResponse(null);
+                    else
+                        onFailure.onFailure(new RuntimeException(body));
                 }
             } catch (Exception e) {
                 onFailure.onFailure(e);
@@ -166,10 +170,14 @@ public class OkHttp {
                 .build();
         enqueue(context, request, response -> {
             try {
-                if(response.body() == null || response.body().string().isEmpty()){
-                    onResponse.onResponse(Void.TYPE.newInstance());
-                }else{
-                    onFailure.onFailure(new RuntimeException(response.body().string()));
+                if(response.body() == null)
+                    onResponse.onResponse(null);
+                else{
+                    String body = response.body().string();
+                    if(body.isEmpty())
+                        onResponse.onResponse(null);
+                    else
+                        onFailure.onFailure(new RuntimeException(body));
                 }
             } catch (Exception e) {
                 onFailure.onFailure(e);

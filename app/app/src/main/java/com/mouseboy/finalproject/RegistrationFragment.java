@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -36,20 +37,24 @@ public class RegistrationFragment extends DialogFragment {
 
         // Handle registration completion
         Button submitButton = view.findViewById(R.id.btn_submit);
+        TextView displayInput = view.findViewById(R.id.displayname);
+        TextView usernameInput = view.findViewById(R.id.username);
+        TextView passwordInput = view.findViewById(R.id.password);
         submitButton.setOnClickListener(v -> {
-            String display = "";
-            String username = "";//usernameInput.getText().toString().trim();
-            String password = "";//passwordInput.getText().toString().trim();
+            String display = displayInput.getText().toString().trim();
+            String username = usernameInput.getText().toString().trim();
+            String password = passwordInput.getText().toString().trim();
 
             String mash = Util.mash(username, password);
             ServerApi.User user = new ServerApi.User(mash, display);
             ServerApi.createUser(getContext(), user, _void -> {
-                Toast.makeText(getContext(), "Login Successful", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Account Creation Successful", Toast.LENGTH_SHORT).show();
                 MainActivity.user_registered(requireActivity(), username, password);
                 MainActivity.receiveUserData(user);
                 MainActivity.switch_to_main(requireActivity());
                 dismiss();
             }, error -> {
+                Util.logThrowable(error);
                 if(error instanceof OkHttp.HttpException){
                     Toast.makeText(getContext(), "Already exists", Toast.LENGTH_SHORT).show();
                 }else{

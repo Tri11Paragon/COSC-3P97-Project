@@ -53,13 +53,7 @@ public class LoginFragment extends DialogFragment {
                 MainActivity.receiveUserData(data);
                 MainActivity.switch_to_main(requireActivity());
                 dismiss();
-            }, error -> {
-                if(error instanceof OkHttp.HttpException){
-                    Toast.makeText(getContext(), "Already exists", Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
-                }
-            });
+            }, error -> Toast.makeText(getContext(), "Invalid Login", Toast.LENGTH_SHORT).show());
         });
     }
 

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,22 +12,11 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
-import com.google.gson.GsonBuilder;
 import com.mouseboy.finalproject.server.ServerApi;
 import com.mouseboy.finalproject.util.Util;
 import com.mouseboy.finalproject.weather.LocationTracker;
-import com.mouseboy.finalproject.weather.WeatherApi;
 
-import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -81,9 +69,9 @@ public class MainActivity extends AppCompatActivity {
             .commit();
     }
 
-    public static void user_registered(Activity context, String username, String token) {
+    public static void user_registered(Activity context, String username, String password) {
         SharedPreferences prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
-        prefs.edit().putString("username", username).putString("token", token).apply();
+        prefs.edit().putString("username", username).putString("password", password).apply();
     }
 
     public static void user_logout(Activity context){
