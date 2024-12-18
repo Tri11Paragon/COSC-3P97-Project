@@ -65,11 +65,4 @@ public class RegistrationFragment extends DialogFragment {
     public int getTheme() {
         return com.google.android.material.R.style.Theme_Material3_Dark_Dialog;
     }
-
-    static void open_registration(FragmentActivity activity){
-        RegistrationFragment registrationFragment = new RegistrationFragment();
-//        registrationFragment.setCancelable(false);
-//        registrationFragment.show(manager, "RegistrationFragment");
-        MainActivity.pushFragment(activity, registrationFragment);
-    }
 }

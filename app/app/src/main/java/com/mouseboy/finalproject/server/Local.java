@@ -5,6 +5,12 @@ import java.util.ArrayList;
 public class Local {
     private static ServerApi.User currentUser = null;
     private static final ArrayList<ServerApi.AllWalkInfo> walks = new ArrayList<>();
+    private static ServerApi.AllWalkInfo currentWalk;
+
+
+    public static void addWalk(){
+
+    }
 
 
     public static boolean isUserLoggedIn(){

@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         activity.getSupportFragmentManager()
             .beginTransaction()
             .replace(R.id.fragment_container, fragment)
-            .addToBackStack("fragment.switch")
+            .addToBackStack(null)
             .commit();
     }
 

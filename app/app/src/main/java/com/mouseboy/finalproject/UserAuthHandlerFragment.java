@@ -38,8 +38,15 @@ public class UserAuthHandlerFragment extends Fragment {
         });
 
         btnContinue.setOnClickListener(v -> {
-            MainActivity.pushFragment(getActivity(), new MainFragment());
+            MainActivity.switchToFragment(getActivity(), new MainFragment());
         });
+    }
+
+    public static UserAuthHandlerFragment newInstance() {
+        UserAuthHandlerFragment fragment = new UserAuthHandlerFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
     }
 
 }

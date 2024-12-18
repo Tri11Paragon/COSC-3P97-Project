@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.mouseboy.finalproject.server.Local;
+
 public class PagerAdaptor extends FragmentStateAdapter {
 
     public PagerAdaptor(@NonNull FragmentActivity fragmentActivity) {
@@ -20,7 +22,10 @@ public class PagerAdaptor extends FragmentStateAdapter {
             case 1:
                 return HomePage.newInstance();
             case 2:
-                return AccountManagementFragment.newInstance();
+                if (Local.isUserLoggedIn())
+                    return AccountManagementFragment.newInstance();
+                else
+                    return UserAuthHandlerFragment.newInstance();
         }
         return HomePage.newInstance();
     }
