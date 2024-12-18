@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  cosc3p97-server:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: cosc3p97-server
+    privileged: true
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - DB_PATH=/data
+    volumes:
+      - ./server_data:/data
+    ports:
+      - 32420:8080
+    restart: unless-stopped
+
