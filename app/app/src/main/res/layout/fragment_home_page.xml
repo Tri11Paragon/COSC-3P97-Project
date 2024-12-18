@@ -10,29 +10,41 @@
         android:layout_height="match_parent">
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:baselineAligned="false"
-                android:orientation="horizontal"
-                android:weightSum="2"
-                android:gravity="center"
-                android:layout_gravity="center">
-                <LinearLayout
-                    android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/elapsed_time"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_weight="1">
-                    <Button
-                        android:id="@+id/startWalkButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_gravity="center"
-                        android:background="@drawable/start_button_ripple"
-                        android:backgroundTint="#F20101"
-                        android:gravity="center"
-                        android:text="Press Me"
-                        android:textColor="#FFFFFF"
-                        android:textSize="18sp"
-                        android:layout_weight="1"/>
+                    android:textSize="32sp"
+                    android:gravity="center"
+                    android:text="Hello Elapsed Time"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    android:gravity="center"
+                    android:layout_gravity="center">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_weight="1">
+                        <Button
+                            android:id="@+id/startWalkButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_gravity="center"
+                            android:background="@drawable/start_button_ripple"
+                            android:backgroundTint="#F20101"
+                            android:gravity="center"
+                            android:text="Press Me"
+                            android:textColor="#FFFFFF"
+                            android:textSize="18sp"
+                            android:layout_weight="1"/>
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
     </ScrollView>
