@@ -1,7 +1,5 @@
 package com.mouseboy.finalproject;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 
 import com.mouseboy.finalproject.server.ServerApi;
 import com.mouseboy.finalproject.util.OkHttp;
@@ -48,10 +44,10 @@ public class RegistrationFragment extends DialogFragment {
             String mash = Util.mash(username, password);
             ServerApi.User user = new ServerApi.User(mash, display);
             ServerApi.createUser(getContext(), user, _void -> {
-                Toast.makeText(getContext(), "Account Creation Successful", Toast.LENGTH_SHORT).show();
+                Util.toast(getContext(), "Account Creation Successful");
                 MainActivity.user_registered(requireActivity(), username, password);
                 MainActivity.receiveUserData(user);
-                MainActivity.switch_to_main(requireActivity());
+                MainActivity.switchToUserHome(requireActivity());
                 dismiss();
             }, error -> {
                 Util.logThrowable(error);
@@ -73,6 +69,6 @@ public class RegistrationFragment extends DialogFragment {
         RegistrationFragment registrationFragment = new RegistrationFragment();
 //        registrationFragment.setCancelable(false);
 //        registrationFragment.show(manager, "RegistrationFragment");
-        MainActivity.switchToFragment(activity, registrationFragment);
+        MainActivity.pushFragment(activity, registrationFragment);
     }
 }

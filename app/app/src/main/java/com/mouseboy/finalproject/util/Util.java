@@ -1,5 +1,9 @@
 package com.mouseboy.finalproject.util;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.widget.Toast;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -45,5 +49,30 @@ public class Util {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void toast(Context context, String message){
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    }
+
+    public static OkHttp.OnFailure toastFail(Context context, String message){
+        return e -> {
+            toast(context, message);
+            logThrowable(e);
+        };
+    }
+
+    public static void showAlert(Context context, String title, String message, Runnable yes, Runnable no) {
+        new AlertDialog.Builder(context)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton("Yes", (dialog, which) -> {
+                yes.run();
+            })
+            .setNegativeButton("No", (dialog, which) -> {
+                no.run();
+                dialog.dismiss();
+            })
+            .show();
     }
 }

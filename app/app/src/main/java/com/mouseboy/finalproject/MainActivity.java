@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.mouseboy.finalproject.server.ServerApi;
 import com.mouseboy.finalproject.util.Util;
@@ -46,27 +47,43 @@ public class MainActivity extends AppCompatActivity {
                 this, Util.mash(username, password),
                 data -> {
                     receiveUserData(data);
-                    switch_to_main(this);
+                    switchToUserHome(this);
                 },
-                error -> switch_to_register(this)
+                error -> switchToNotLoggedIn(this)
             );
         }else{
-            switch_to_register(this);
+            switchToNotLoggedIn(this);
         }
     }
 
-    private static String displayName = "";
+    public static ServerApi.User currentUser = null;
 
     public static void receiveUserData(ServerApi.User data){
-        displayName = data.name;
+        currentUser = data;
     }
 
     public static void switchToFragment(FragmentActivity activity, Fragment fragment) {
+        activity.getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        activity.getSupportFragmentManager()
+            .beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit();
+    }
+
+    public static void pushFragment(FragmentActivity activity, Fragment fragment) {
         activity.getSupportFragmentManager()
             .beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .addToBackStack("fragment.swtich")
             .commit();
+    }
+
+    public static void switchToUserHome(FragmentActivity activity){
+        switchToFragment(activity, new MainFragment());
+    }
+
+    public static void switchToNotLoggedIn(FragmentActivity activity){
+        switchToFragment(activity, new AuthHandlerFragment());
     }
 
     public static void user_registered(Activity context, String username, String password) {
@@ -77,19 +94,6 @@ public class MainActivity extends AppCompatActivity {
     public static void user_logout(Activity context){
         SharedPreferences prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
         prefs.edit().remove("username").remove("token").apply();
-    }
-
-    public static void switch_to_main(FragmentActivity activity){
-        activity.getSupportFragmentManager()
-            .beginTransaction()
-            .replace(R.id.fragment_container, new MainFragment())
-            .commit();
-    }
-
-    public static void switch_to_register(FragmentActivity activity){
-        activity.getSupportFragmentManager()
-            .beginTransaction()
-            .replace(R.id.fragment_container, new AuthHandlerFragment())
-            .commit();
+        currentUser = null;
     }
 }

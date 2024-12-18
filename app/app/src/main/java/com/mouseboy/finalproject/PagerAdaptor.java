@@ -20,7 +20,7 @@ public class PagerAdaptor extends FragmentStateAdapter {
             case 1:
                 return HomePage.newInstance();
             case 2:
-                return HomePage.newInstance();
+                return AccountManagement.newInstance();
         }
         return HomePage.newInstance();
     }

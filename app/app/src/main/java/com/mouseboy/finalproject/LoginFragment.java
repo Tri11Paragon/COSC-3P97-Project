@@ -1,25 +1,18 @@
 package com.mouseboy.finalproject;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 
 import com.mouseboy.finalproject.server.ServerApi;
-import com.mouseboy.finalproject.util.OkHttp;
 import com.mouseboy.finalproject.util.Util;
 
 public class LoginFragment extends DialogFragment {
@@ -48,12 +41,12 @@ public class LoginFragment extends DialogFragment {
 
             String mash = Util.mash(username, password);
             ServerApi.getUser(getContext(), mash, data -> {
-                Toast.makeText(getContext(), "Login Successful", Toast.LENGTH_SHORT).show();
+                Util.toast(getContext(), "Login Successful");
                 MainActivity.user_registered(requireActivity(), username, password);
                 MainActivity.receiveUserData(data);
-                MainActivity.switch_to_main(requireActivity());
+                MainActivity.switchToUserHome(requireActivity());
                 dismiss();
-            }, error -> Toast.makeText(getContext(), "Invalid Login", Toast.LENGTH_SHORT).show());
+            }, Util.toastFail(getContext(), "Invalid Login"));
         });
     }
 
