@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="StartButtonStyle">
+        <item name="android:background">@drawable/start_button_ripple</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:padding">16dp</item>
+    </style>
+
+    <style name="StopButtonStyle">
+        <item name="android:background">@drawable/stop_button_ripple</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:padding">16dp</item>
+    </style>
+
+</resources>
