@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
+import com.mouseboy.finalproject.server.Local;
 import com.mouseboy.finalproject.server.ServerApi;
 import com.mouseboy.finalproject.util.Util;
 import com.mouseboy.finalproject.weather.LocationTracker;
@@ -45,8 +46,8 @@ public class MainActivity extends AppCompatActivity {
             String password = prefs.getString("password", "");
             ServerApi.getUser(
                 this, Util.mash(username, password),
-                data -> {
-                    receiveUserData(data);
+                user -> {
+                    Local.login(user);
                     switchToUserHome(this);
                 },
                 error -> switchToNotLoggedIn(this)
@@ -54,12 +55,6 @@ public class MainActivity extends AppCompatActivity {
         }else{
             switchToNotLoggedIn(this);
         }
-    }
-
-    public static ServerApi.User currentUser = null;
-
-    public static void receiveUserData(ServerApi.User data){
-        currentUser = data;
     }
 
     public static void switchToFragment(FragmentActivity activity, Fragment fragment) {
@@ -94,6 +89,6 @@ public class MainActivity extends AppCompatActivity {
     public static void user_logout(Activity context){
         SharedPreferences prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
         prefs.edit().remove("username").remove("token").apply();
-        currentUser = null;
+        Local.logout();
     }
 }
