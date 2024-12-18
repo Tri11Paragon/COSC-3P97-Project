@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void switchToNotLoggedIn(FragmentActivity activity){
-        switchToFragment(activity, new AuthHandlerFragment());
+        switchToFragment(activity, new UserAuthHandlerFragment());
     }
 
     public static void user_registered(Activity context, String username, String password) {
