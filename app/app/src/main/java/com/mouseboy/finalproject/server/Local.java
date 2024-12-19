@@ -85,10 +85,10 @@ public class Local {
         if(isUserLoggedIn())
             ServerApi.listWalks(context, new ServerApi.ListWalks(getCurrentUser().id, start, end), nl -> {
                 walks.addAll(Arrays.asList(nl));
-                response.onResponse(sort(walks, new ServerApi.WalkInfo[0], (walkInfo, t1) -> walkInfo.start.compareTo(t1.start)));
+                response.onResponse(sort(walks, new ServerApi.WalkInfo[0], (t1, t2) -> t2.start.compareTo(t1.start)));
             }, error);
         else{
-            response.onResponse(sort(walks, new ServerApi.WalkInfo[0], (walkInfo, t1) -> walkInfo.start.compareTo(t1.start)));
+            response.onResponse(sort(walks, new ServerApi.WalkInfo[0], (t1, t2) -> t2.start.compareTo(t1.start)));
         }
     }
 
