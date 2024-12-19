@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        Local.load(this);
         SharedPreferences prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
         if(prefs.contains("username") && prefs.contains("password")){
             String username = prefs.getString("username", "");

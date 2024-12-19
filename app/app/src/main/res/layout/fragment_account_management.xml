@@ -61,6 +61,14 @@
                     android:layout_height="wrap_content"
                     android:text=""
                     android:textSize="32sp"/>
+
+                <Button
+                    android:id="@+id/sync_local"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Sync To Account"
+                    android:visibility="gone" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

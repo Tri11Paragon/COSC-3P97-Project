@@ -2,27 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:background="@color/bg"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:orientation="vertical">
+
     <LinearLayout
-        android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/bg"
         android:orientation="vertical"
-        android:padding="16dp"
-        android:background="@color/bg">
+        android:padding="16dp">
 
         <EditText
             android:id="@+id/detailTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:autofillHints=""
             android:inputType="textPersonName"
             android:text="Detail Title"
             android:textSize="32sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/detailDescription"
@@ -43,48 +45,49 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginBottom="4dp"
             android:gravity="center"
-            android:layout_marginBottom="4dp">
+            android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/leftIcon"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:src="@drawable/sad_face"
+                android:layout_marginEnd="8dp"
                 android:contentDescription="Left Icon"
-                android:layout_marginEnd="8dp" />
+                android:src="@drawable/sad_face" />
 
             <SeekBar
                 android:id="@+id/rating"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:max="100"
-                android:textSize="20sp"
-                android:layout_weight="1"/>
+                android:textSize="20sp" />
 
             <ImageView
                 android:id="@+id/rightIcon"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:src="@drawable/smile"
+                android:layout_marginStart="8dp"
                 android:contentDescription="Right Icon"
-                android:layout_marginStart="8dp" />
+                android:src="@drawable/smile" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginBottom="4dp"
             android:gravity="center"
-            android:layout_marginBottom="4dp">
+            android:orientation="horizontal">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Started"
                 android:layout_weight="1"
-                android:textSize="20sp"
-                />
+                android:text="Started"
+                android:textSize="20sp" />
+
             <TextView
                 android:id="@+id/started"
                 android:layout_width="wrap_content"
@@ -95,16 +98,17 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginBottom="4dp"
             android:gravity="center"
-            android:layout_marginBottom="4dp">
+            android:orientation="horizontal">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ended"
                 android:layout_weight="1"
-                android:textSize="20sp"
-                />
+                android:text="Ended"
+                android:textSize="20sp" />
+
             <TextView
                 android:id="@+id/ended"
                 android:layout_width="wrap_content"
@@ -113,29 +117,31 @@
         </LinearLayout>
 
 
-
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0"
         android:orientation="horizontal">
+
         <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="8dp"
             android:id="@+id/backButton"
-            android:text="Back"
-            android:textSize="20sp"/>
-        <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:text="Back"
+            android:textSize="20sp" />
+
+        <Button
             android:id="@+id/deleteWalkButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
             android:backgroundTint="@android:color/holo_red_dark"
             android:text="Delete Walk"
-            android:textSize="20sp"/>
+            android:textSize="20sp" />
     </LinearLayout>
 </LinearLayout>

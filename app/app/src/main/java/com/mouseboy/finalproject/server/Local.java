@@ -85,8 +85,8 @@ public class Local {
 
         ArrayList<ServerApi.WalkInfo> walks = new ArrayList<>();
         for(int i = 0; i < state.walks.size(); i ++){
-            var walk = state.walks.get(i);
-            if(walk.walk.start.compareTo(start) >= 0 && walk.walk.end.compareTo(end) <= 0){
+            ServerApi.WalkInfo walk = state.walks.get(i).walk;
+            if(walk.start.compareTo(start) >= 0 && walk.end.compareTo(end) <= 0){
                 walks.add(new Gson().fromJson(new Gson().toJson(walk), ServerApi.WalkInfo.class));
             }
         }
