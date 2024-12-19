@@ -100,18 +100,22 @@ public class HomePage extends Fragment implements Runnable {
         button = view.findViewById(R.id.startWalkButton);
         if(WalkTrackingService.isRunning(requireContext())){
             button.setText("STOP WALK");
+            button.setBackgroundResource(R.drawable.stop_button_background);
         }else{
             button.setText("START WALK");
+            button.setBackgroundResource(R.drawable.start_button_background);
         }
         button.setOnClickListener(e -> {
             if(WalkTrackingService.isRunning(requireContext())){
                 WalkTrackingService.stop(requireContext());
                 button.setText("START WALK");
+                button.setBackgroundResource(R.drawable.start_button_background);
                 MainActivity.switchToUserHome(requireActivity());
             }else{
                 LocationTracker.ensurePermissions(this, () -> {
                     WalkTrackingService.start(requireContext());
                     button.setText("STOP WALK");
+                    button.setBackgroundResource(R.drawable.stop_button_background);
                 });
             }
         });
