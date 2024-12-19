@@ -103,6 +103,7 @@ public class HomePage extends Fragment implements Runnable {
         TextView status = requireView().findViewById(R.id.current_conditions_status);
         if (Local.isUserLoggedIn()) {
             WeatherApi.request(requireContext(), new WeatherApi.WeatherRequest(), weather -> {
+                System.out.println(weather);
                 ServerApi.analyzeWalkConditions(requireContext(), new ServerApi.Meow(Local.getCurrentUser().id, weather.current), parker -> {
                     if (parker > 0.5) {
                         status.setText("Favourable");

@@ -29,20 +29,20 @@ public class Local {
     }
 
     public static synchronized void listWalks(Context context, Date start, Date end, OkHttp.OnResponse<ServerApi.WalkInfo[]> response, OkHttp.OnFailure error){
-        java.util.stream.Stream<ServerApi.WalkInfo> localStream = state.walks.stream()
-            .map(v -> v.walk)
-            .filter(walk -> walk.start.compareTo(start) < 0)
-            .filter(walk -> walk.start.compareTo(end) > 0)
-            .sorted(Comparator.comparingLong(walkInfo -> walkInfo.start.getTime()));
-        if(isUserLoggedIn())
-            ServerApi.listWalks(context, new ServerApi.ListWalks(getCurrentUser().id, start, end), nl -> {
-                response.onResponse(Stream.concat(Arrays.stream(nl), localStream)
-                    .toArray(ServerApi.WalkInfo[]::new));
-            }, error);
-        else{
-            response.onResponse(localStream
-                .toArray(ServerApi.WalkInfo[]::new));
-        }
+//        java.util.stream.Stream<ServerApi.WalkInfo> localStream = state.walks.stream()
+//            .map(v -> v.walk)
+//            .filter(walk -> walk.start.compareTo(start) < 0)
+//            .filter(walk -> walk.start.compareTo(end) > 0)
+//            .sorted(Comparator.comparingLong(walkInfo -> walkInfo.start.getTime()));
+//        if(isUserLoggedIn())
+//            ServerApi.listWalks(context, new ServerApi.ListWalks(getCurrentUser().id, start, end), nl -> {
+//                response.onResponse(Stream.concat(Arrays.stream(nl), localStream)
+//                    .toArray(ServerApi.WalkInfo[]::new));
+//            }, error);
+//        else{
+//            response.onResponse(localStream
+//                .toArray(ServerApi.WalkInfo[]::new));
+//        }
     }
 
     public static synchronized void listWalkInfo(Context context, int walk_id, OkHttp.OnResponse<ServerApi.WalkInstanceInfo[]> response, OkHttp.OnFailure error){
