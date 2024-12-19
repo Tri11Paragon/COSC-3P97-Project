@@ -7,6 +7,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.mouseboy.finalproject.util.OkHttp;
 import com.mouseboy.finalproject.util.Util;
+import com.mouseboy.finalproject.weather.LocationTracker;
 import com.mouseboy.finalproject.weather.WeatherApi;
 
 import java.io.File;
@@ -24,12 +25,13 @@ public class Local {
     private static ServerApi.User currentUser = null;
     private static Information state = new Information();
 
-    public static synchronized void startWalk() {
+    public static synchronized void startWalk(Context context) {
         state.currentWalk = new ServerApi.AllWalkInfo();
         state.currentWalk.walk = new ServerApi.WalkInfo();
         state.currentWalk.walk.rating = 0.5;
         state.currentWalk.conditions = new ServerApi.WalkInstanceInfo[0];
         state.currentWalk.walk.start = new Date();
+        addThing(context, LocationTracker.bestLocation());
     }
 
     public static synchronized void addThing(Context context, Location location){

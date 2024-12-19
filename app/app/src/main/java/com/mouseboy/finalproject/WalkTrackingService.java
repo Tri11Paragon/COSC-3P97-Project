@@ -102,7 +102,7 @@ public class WalkTrackingService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Logger.getGlobal().log(Level.INFO, "Start: " + this);
 
-        Local.startWalk();
+        Local.startWalk(this);
 
         startForeground(1, createNotification());
         listener = this::locationUpdate;
