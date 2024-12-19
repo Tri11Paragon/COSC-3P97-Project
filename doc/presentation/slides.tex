@@ -89,7 +89,6 @@
 		\frametitle{Why the hell do we want to do this anyways?}
 
 		\begin{itemize}
-			\item Low-level stuff (graphics, opengl, etc.)
 			\item Signficiantly faster than Java
 			% Java is awful at applying optimizations and taking advantage of hardware features like parallelism
 			\begin{itemize}
@@ -97,14 +96,15 @@
 				\begin{itemize}
 					\item \dots but still not spectacular
 				\end{itemize}
-				\item Doesn't help that Java isn't known for being optimized
-				\item Can be domain/application specific
-				\begin{itemize}
-					% ffmpeg/liabav for video processing, numerical computing, neural networks
-					\item Video processing
-					\item Numerical computing
-					\item Neural networks
-				\end{itemize}
+				\item User expectations tend to have lower tolerances for slugginess
+			\end{itemize}
+			\item Low-level stuff (graphics/opengl, MIDI, USB, etc.)
+			\item Can be domain/application specific
+			\begin{itemize}
+				% ffmpeg/liabav for video processing, numerical computing, neural networks
+				\item Video processing
+				\item Numerical computing
+				\item Neural networks
 			\end{itemize}
 			% writing your application's core to be portable, games, etc.
 			\item Application portability
@@ -117,42 +117,35 @@
 
 	\section{JNI}
 
-	\begin{frame}
-		\frametitle{JNI: Java Native Interface}
-
-		\begin{itemize}
-			\item For (relatively) simple stuff
-			\item Requires a hand crafted C standard object
-			\item JNI loads the library at runtime and extracts info about functions from function declarations
-			\item \dots and links them up to their corresponding Java methods stubs
-			\begin{itemize}
-				\item The Java runtime is responsible for function linkage
-				\item Function linkage is otherwise static
-				\item Fast!
-			\end{itemize}
-			\item The glue of how most of native code interacts with Java \& Android
-		\end{itemize}
-
-	\end{frame}
-
 	\begin{frame}[fragile]
 		\frametitle{JNI: Java Native Interface}
 
 		\begin{itemize}
-			\item On the C side, it requires
+			\item For (relatively) simple stuff
+			\item Requires a hand crafted C standard object (with the \lstinline{-shared} flag)
+			\item JNI loads the library at runtime and extracts info about functions from function declarations
 			\begin{itemize}
-				\item including \lstinline[language=c]{jni.h}
-				\item changing your function name to reflect the Java package path
-				\item using macros for accepting Java types
-				\item building as a standard object (with the \lstinline{-shared} flag)
-				\item and using the build of clang included in your Android installation
+				\item Function names map to namespaces, custom types, etc.
 			\end{itemize}
+			\item \dots and links them up to their corresponding Java methods stubs
+			\item The glue of how most of native code interacts with Java \& Android
 		\end{itemize}
+
+		% \begin{itemize}
+		% 	\item On the C side, it requires
+		% 	\begin{itemize}
+		% 		\item including \lstinline[language=c]{jni.h}
+		% 		\item changing your function name to reflect the Java package path
+		% 		\item using macros for accepting Java types
+		% 		\item building as a standard object (with the \lstinline{-shared} flag)
+		% 		\item and using the build of clang included in your Android installation
+		% 	\end{itemize}
+		% \end{itemize}
 
 		\begin{lstlisting}[language=c]
 #include <jni.h>
 
-JNIEXPORT jlong JNICALL Java_com_your_package_Main_factorial(JNIEnv *jenv, jint n) {
+JNIEXPORT jlong JNICALL Java_com_your_package_Factorial_factorial(JNIEnv *jenv, jint n) {
 	long out = 1L;
 	// loop from n to 1
 	while (n --> 1) { out *= n + 1; }
@@ -164,20 +157,20 @@ JNIEXPORT jlong JNICALL Java_com_your_package_Main_factorial(JNIEnv *jenv, jint 
 	\begin{frame}[fragile]
 		\frametitle{JNI: Java Native Interface}
 
-		\begin{itemize}
-			\item On the Java side, it requires
-			\begin{itemize}
-				\item Duplicating the C headers into Java with the \lstinline[language=java]{native} keyword
-				\item Loading the library by filename (sorta?)
-				% java does some platform detection and filename guessing to load the correct object on whatever platform. so a dll on windows, so anywhere else an so. and it'll also try searching the system dynamic library path for the library as well. so for instance android has libxml2 build-in as a system library, so it'll find it on the system path, even if it wasn't bundled in your apk
-				\item Integrating the object files into your build pipeline
-				% on android, you can either add a few gradle directives to indicate which directories it should search for objects in, or you can use android studio's cmake pipeline (but of course that requires using cmake, which not only is trash, but also doesn't work if you need to compile projects using other build systems. of note you'll still need to configure proper paths for cmake)
-				% if you really want to do it manually you can also copy the object files directly into your apks, since that's what gradle is doing under the hood for you
+		% \begin{itemize}
+		% 	\item On the Java side, it requires
+		% 	\begin{itemize}
+		% 		\item Duplicating the C headers into Java with the \lstinline[language=java]{native} keyword
+		% 		\item Loading the library by filename (sorta?)
+		% 		% java does some platform detection and filename guessing to load the correct object on whatever platform. so a dll on windows, so anywhere else an so. and it'll also try searching the system dynamic library path for the library as well. so for instance android has libxml2 build-in as a system library, so it'll find it on the system path, even if it wasn't bundled in your apk
+		% 		\item Integrating the object files into your build pipeline
+		% 		% on android, you can either add a few gradle directives to indicate which directories it should search for objects in, or you can use android studio's cmake pipeline (but of course that requires using cmake, which not only is trash, but also doesn't work if you need to compile projects using other build systems. of note you'll still need to configure proper paths for cmake)
+		% 		% if you really want to do it manually you can also copy the object files directly into your apks, since that's what gradle is doing under the hood for you
 
-				% if you're building a jar, both maven and gradle can do it for you with enough build directives
-				% on that note, by the way, JNI works outside of the confines of android
-			\end{itemize}
-		\end{itemize}
+		% 		% if you're building a jar, both maven and gradle can do it for you with enough build directives
+		% 		% on that note, by the way, JNI works outside of the confines of android
+		% 	\end{itemize}
+		% \end{itemize}
 
 		\begin{lstlisting}[language=java]
 package com.your.namespace;
@@ -193,6 +186,13 @@ public static void main(String args[]) {
 	Main.factorial(42);
 }
 		\end{lstlisting}
+
+		\begin{itemize}
+			\item Integrating the object files into your build pipeline
+			\begin{itemize}
+				\item \lstinline{sourceSets.main.jniLibs.srcDirs} entry in \lstinline{build.gradle}
+			\end{itemize}
+		\end{itemize}
 	\end{frame}
 
 	\begin{frame}
@@ -204,22 +204,22 @@ public static void main(String args[]) {
 				\begin{tabular}{|c|c|c|}
 					\hline
 					{\bfseries Java Type} & {\bfseries JNI Type} & {\bfseries C Type} \\ \hline
-					\lstinline[language=java]{boolean} & \lstinline{jboolean} & \lstinline[language=c]{bool/int} \\
+					\lstinline[language=java]{boolean} & \lstinline{jboolean} & \lstinline[language=c]{bool/char} \\
 					\lstinline[language=java]{byte} & \lstinline{jbyte} & \lstinline[language=c]{char} \\
-					\lstinline[language=java]{char} & \lstinline{jchar} & \lstinline[language=c]{unsigned short} \\
-					\lstinline[language=java]{short} & \lstinline{jshort} & \lstinline[language=c]{short} \\
-					\lstinline[language=java]{int} & \lstinline{jint} & \lstinline[language=c]{int} \\
-					\lstinline[language=java]{long} & \lstinline{jlong} & \lstinline[language=c]{long} \\
+					\lstinline[language=java]{char} & \lstinline{jchar} & \lstinline[language=c]{uint16_t} \\
+					\lstinline[language=java]{short} & \lstinline{jshort} & \lstinline[language=c]{int16_t} \\
+					\lstinline[language=java]{int} & \lstinline{jint} & \lstinline[language=c]{int32_t} \\
+					\lstinline[language=java]{long} & \lstinline{jlong} & \lstinline[language=c]{int64_t} \\
 					\lstinline[language=java]{float} & \lstinline{jfloat} & \lstinline[language=c]{float} \\
 					\lstinline[language=java]{double} & \lstinline{jdouble} & \lstinline[language=c]{double} \\
 					\lstinline[language=java]{Object} & \lstinline{jobject} & \\
 					\lstinline[language=java]{String} & \lstinline{jstring} & \\
 					\lstinline[language=java]{Class} & \lstinline{jclass} & \\
 					\lstinline[language=java]{Throwable} & \lstinline{jthrowable} & \\
-					\lstinline[language=java]{Object[]} & \lstinline{jobjectArray} & \\
 					\lstinline[language=java]{<type>[]} & \lstinline{j<type>Array} & \lstinline{<type>[]} \\
-					void & void & void \\
-					 & jsize & int \\
+					\lstinline[language=java]{Object[]} & \lstinline{jobjectArray} & \\
+					\lstinline{void} & \lstinline{void} & \lstinline{void} \\
+					 & \lstinline{jsize} & \lstinline{int32_t} \\
 					\hline
 				\end{tabular}
 				\caption{JNI Type Conversion Chart}
@@ -238,27 +238,33 @@ public static void main(String args[]) {
 		\begin{itemize}
 			\item What if we want to interact with objects?
 			\begin{itemize}
-				\item \lstinline{jni.h} provides a bunch of functions\footnote{\href{https://docs.oracle.com/en/java/javase/17/docs/specs/jni/functions.html}{https://docs.oracle.com/en/java/javase/17/docs/specs/jni/functions.html}} on \lstinline{JNIEnv}
 				\item It won't be pretty\dots
+			\end{itemize}
+			\item \lstinline{jni.h} provides a bunch of functions\footnote{\href{https://docs.oracle.com/en/java/javase/17/docs/specs/jni/functions.html}{https://docs.oracle.com/en/java/javase/17/docs/specs/jni/functions.html}} on \lstinline{JNIEnv}
+			\begin{itemize}
+				\item \lstinline[language=c]{jenv->GetStaticBooleanField(obj, "IsStarted")}
+				\item \lstinline[language=c]{unsigned char* str = jenv->GetStringUTFChars(jstr, NULL)}
+				\item \lstinline[language=c]{jenv->GetStringUTFLength(jstr)}
+				\item There's hundreds of these\dots
 			\end{itemize}
 		\end{itemize}
 
-		\begin{lstlisting}[language=c]
-JNIEXPORT jstring JNICALL Java_com_your_package_Main_whatever(JNIEnv *jenv, jobject obj, jstring name) {
-	bool isBlue = jenv->GetStaticBooleanField(obj, "isBlue");
-	jenv->SetStaticBooleanField(obj, "isBlue", !isBlue);
+% 		\begin{lstlisting}[language=c]
+% JNIEXPORT jstring JNICALL Java_com_your_package_Main_whatever(JNIEnv *jenv, jobject obj, jstring name) {
+% 	bool isBlue = jenv->GetStaticBooleanField(obj, "isBlue");
+% 	jenv->SetStaticBooleanField(obj, "isBlue", !isBlue);
 
-	unsigned char* nameC = jenv->GetStringUTFChars(name, NULL);
-	jsize nameNum = jenv->GetStringUTFLength(name);
-	for (int i = 0; i < nameNum; i++) {
-		nameC[i] = tolower(nameC[i]);
-		nameC[i] = nameC[i] == '\0' ? ' ' : nameC[i];
-	}
-	jstring newName = jenv->NewStringUTF(nameC);
-	jenv->ReleaseStringUTFChars(nameC);
-	return newName;
-}
-		\end{lstlisting}
+% 	unsigned char* nameC = jenv->GetStringUTFChars(name, NULL);
+% 	jsize nameNum = jenv->GetStringUTFLength(name);
+% 	for (int i = 0; i < nameNum; i++) {
+% 		nameC[i] = tolower(nameC[i]);
+% 		nameC[i] = nameC[i] == '\0' ? ' ' : nameC[i];
+% 	}
+% 	jstring newName = jenv->NewStringUTF(nameC);
+% 	jenv->ReleaseStringUTFChars(nameC);
+% 	return newName;
+% }
+% 		\end{lstlisting}
 	\end{frame}
 
 	\begin{frame}
@@ -266,182 +272,183 @@ JNIEXPORT jstring JNICALL Java_com_your_package_Main_whatever(JNIEnv *jenv, jobj
 
 		\begin{itemize}
 			\item As you can imagine, this is tedious to use
-			\item Working with objects is painful
-			\item Also, you need control of the source code
 			\begin{itemize}
-				\item What if you want to access a third-party C library over JNI?
+				\item Working with objects is painful
+				\item You need to integrate JNI into the source
+				\item Only compatible with C ABIs (sorry C++ or Rust shills)
 			\end{itemize}
-			\item This only works with C libraries (sorry C++ or Rust shills)
+			\item There are easier solutions:
 			\begin{itemize}
-				\item but put a pin in that, we'll circle back later\dots
-			\end{itemize}
-		\end{itemize}
-	\end{frame}
-
-	\section{JNA}
-
-	\begin{frame}
-		\frametitle{Solution: Java Native Access}
-
-		\begin{itemize}
-			\item One solution is JNA
-			\begin{itemize}
-				\item A maven/gradle library that allows calling methods from C libraries
-				\item \lstinline{implementation "net.java.dev.jna:jna:4.4.0"}
-			\end{itemize}
-			\item Unlike JNI, methods are linked/called dynamically by the user
-			\item Uses a whole lot of reflection to get anything done
-			\item But otherwise doesn't require changes to the library itself!
-			\begin{itemize}
-				\item Nor do libraries need to use JNI types either
-			\end{itemize}
-			\item JNA however, does need to know about the layout of the library
-		\end{itemize}
-	\end{frame}
-
-	\begin{frame}[fragile]
-		\frametitle{Java Native Access}
-			\begin{lstlisting}[language=java]
-import com.sun.jna.*;
-
-@Structure.FieldOrder({"opaque", "version", "width", "height", "format", "flags", "colormapEntries", "warningOrError", "message"})
-public class PNGImage extends Structure {
-	public Pointer opaque;
-	public int version, width, height, format, flags, colormapEntries, warningOrError;
-	public byte[] message = new byte[32];
-}
-
-public interface LibPNG extends Library {
-	LibPNG Instance = (LibPNG) Native.load("libpng", LibPNG.class);
-	int png_image_begin_read_from_file(PNGImage img, String file);
-	int png_image_finish_read(PNGImage img, Pointer bg, byte[] data, int rowStride, Pointer colormap);
-}
-		\end{lstlisting}
-	\end{frame}
-
-	\begin{frame}[fragile]
-		\frametitle{Java Native Access}
-			\begin{lstlisting}[language=java]
-public static void main(String args[]) {
-	var img = new PNGImage();
-	img.opaque = null;
-	img.version = 1;
-
-	LibPNG.Instance.png_image_begin_read_from_file(img, "cat.png");
-	img.format = 3; // PNG_FORMAT_RGBA
-	var pixels = new byte[img.width * img.width * 4];
-	LibPNG.Instance.png_image_finish_read(img, null, pixels, 0, null);
-}
-		\end{lstlisting}
-
-		\begin{itemize}
-			\item We can directly work with libpng, a C library
-			\item If we were using JNI, we would have to write a wrapper library
-			\begin{itemize}
-				\item \dots but we don't need to!
+				\item Java Native Access
+				\item Binding generators
+				\begin{itemize}
+					\item Like SWIG
+				\end{itemize}
 			\end{itemize}
 		\end{itemize}
 	\end{frame}
 
-	\begin{frame}
-		\frametitle{Extra Bits}
+% 	\section{JNA}
 
-		\begin{itemize}
-			\item On android, JNA has an AAR that needs to be required instead of the usual JAR
-			\begin{itemize}
-				\item \lstinline{implementation "net.java.dev.jna:jna:4.4.0@aar"}
-			\end{itemize}
-			\item Can do dynamic loading of many libraries on the same interface
-			\item Even still this is still a lot of effort
-			\begin{itemize}
-				\item We need to hand copy every struct, constant, and \#define into Java
-				\item Instant UB if we mess up a signature
-			\end{itemize}
-			\item Structs needs to be serialized every call
-			\item Also we never solved the whole accessing C++ ABIs problem
-			\begin{itemize}
-				\item Speaking of, why is this an issue at all?
-				% so far our tools have been oblivious to the fact that C code is running at all
-			\end{itemize}
-		\end{itemize}
-	\end{frame}
+% 	\begin{frame}
+% 		\frametitle{Solution: Java Native Access}
 
-	\section{Binding Generation}
+% 		\begin{itemize}
+% 			\item One solution is JNA
+% 			\begin{itemize}
+% 				\item A maven/gradle library that allows calling methods from C libraries
+% 				\item \lstinline{implementation "net.java.dev.jna:jna:4.4.0"}
+% 			\end{itemize}
+% 			\item Library does not need to explicitly use JNI
+% 			\begin{itemize}
+% 				\item Doesn't require changes to the library itself!
+% 			\end{itemize}
+% 			\begin{itemize}
+% 				\item Nor do libraries need to use JNI types either
+% 			\end{itemize}
+% 			\item JNA however, does need to know about the layout of the library
+% 		\end{itemize}
+% 	\end{frame}
 
-	\begin{frame}
-		\frametitle{Binding Generation}
+% 	\begin{frame}[fragile]
+% 		\frametitle{Java Native Access}
+% 			\begin{lstlisting}[language=java]
+% import com.sun.jna.*;
 
-		\begin{itemize}
-			\item One last approach:
-			\begin{itemize}
-				\item What if a tool just does all that ugly work for us?
-			\end{itemize}
-			\item Generates a C ABI source file and ``bindings" on the Java side
-			\item These tools parse header files, so they can handle structs and defines
-			\item Unlike JNI/JNA we can have type-safety again
-			\item There's many binding generators out there
-			\begin{itemize}
-				\item SWIG is one of the more ergonomic ones out there
-				\item Bonus: it also works across a variety of interpreted languages
-			\end{itemize}
-		\end{itemize}
-	\end{frame}
+% @Structure.FieldOrder({"opaque", "version", "width", "height", "format", "flags", "colormapEntries", "warningOrError", "message"})
+% public class PNGImage extends Structure {
+% 	public Pointer opaque;
+% 	public int version, width, height, format, flags, colormapEntries, warningOrError;
+% 	public byte[] message = new byte[32];
+% }
 
-	\begin{frame}[fragile]
-		\frametitle{A Quick Example}
+% public interface LibPNG extends Library {
+% 	LibPNG Instance = (LibPNG) Native.load("libpng", LibPNG.class);
+% 	int png_image_begin_read_from_file(PNGImage img, String file);
+% 	int png_image_finish_read(PNGImage img, Pointer bg, byte[] data, int rowStride, Pointer colormap);
+% }
+% 		\end{lstlisting}
+% 	\end{frame}
 
-		\begin{itemize}
-			\item Let's try libpng again\dots~ SWIG needs an interface/config file first
-		\end{itemize}
+% 	\begin{frame}[fragile]
+% 		\frametitle{Java Native Access}
+% 			\begin{lstlisting}[language=java]
+% public static void main(String args[]) {
+% 	var img = new PNGImage();
+% 	img.opaque = null;
+% 	img.version = 1;
 
-		\begin{lstlisting}
-%module LibPNG
+% 	LibPNG.Instance.png_image_begin_read_from_file(img, "cat.png");
+% 	img.format = 3; // PNG_FORMAT_RGBA
+% 	var pixels = new byte[img.width * img.width * 4];
+% 	LibPNG.Instance.png_image_finish_read(img, null, pixels, 0, null);
+% }
+% 		\end{lstlisting}
 
-%pragma(java) jniclasscode=%{ static {
-	System.loadLibrary("png");
-	System.loadLibrary("libpng_wrap");
-} %}
+% 		\begin{itemize}
+% 			\item We can directly work with libpng, a C library
+% 			\item If we were using JNI, we would have to write a wrapper library
+% 			\begin{itemize}
+% 				\item \dots but we don't need to!
+% 			\end{itemize}
+% 		\end{itemize}
+% 	\end{frame}
 
-%javaconst(1);
-%rename("%(lowercamelcase)s", %$isfunction) "";
-%rename("%(uppercase)s", %$isconstant) "";
-// ...
+% 	\begin{frame}
+% 		\frametitle{Extra Bits}
 
-%{ #include "png.h" %}
-%import "limits.h"
-%import "stddef.h"
-%import "pngconf.h"
-%import "pnglibconf.h"
-%include "png.h"
-		\end{lstlisting}
-	\end{frame}
+% 		\begin{itemize}
+% 			\item On android, JNA has an AAR that needs to be required instead of the usual JAR
+% 			\begin{itemize}
+% 				\item \lstinline{implementation "net.java.dev.jna:jna:4.4.0@aar"}
+% 			\end{itemize}
+% 			\item Even still this is still a lot of effort
+% 			\begin{itemize}
+% 				\item We need to hand copy every struct, constant, and \#define into Java
+% 				\item Instant UB if we mess up a signature
+% 			\end{itemize}
+% 			\item Structs needs to be serialized every call
+% 			\item JNI/JNA only works with C ABIs
+% 		\end{itemize}
+% 	\end{frame}
 
-	\begin{frame}[fragile]
-		\frametitle{A Quick Example}
+% 	\section{Binding Generation}
 
-		\begin{itemize}
-			\item SWIG generates a Java classe for every C types
-			\begin{itemize}
-				\item And a C wrapper file containing JNI glue code
-			\end{itemize}
-			\item Then from the Java world, it acts like any old Java library
-		\end{itemize}
+% 	\begin{frame}
+% 		\frametitle{Binding Generation}
 
-		\begin{lstlisting}[language=java]
-package com.your.namespace;
+% 		\begin{itemize}
+% 			% so far our approaches have been oblivious to the fact that C code is running at all
+% 			\item One last approach:
+% 			\begin{itemize}
+% 				\item What if a tool just does all that ugly work for us?
+% 			\end{itemize}
+% 			\item Generates a C ABI source file and ``bindings" on the Java side
+% 			\item These tools parse header files, so they can handle structs and defines
+% 			\item Unlike JNI/JNA we can have type-safety again
+% 			\item There's many binding generators out there
+% 			\begin{itemize}
+% 				\item SWIG is one of the more ergonomic ones out there
+% 				\item Bonus: it also works across a variety of interpreted languages
+% 			\end{itemize}
+% 		\end{itemize}
+% 	\end{frame}
 
-public static void main(String args[]) {
-	var img = new PngImage();
-	img.setOpaque(null);
-	img.setVersion(LibPNG.PNG_IMAGE_VERSION);
+% 	\begin{frame}[fragile]
+% 		\frametitle{A Quick Example}
 
-	LibPNG.pngImageBeginReadFromFile(img, "cat.png");
-	img.setFormat(LibPNG.PNG_FORMAT_RGBA);
-	var pixels = new byte[(int)(img.getWidth()*img.getHeight()*4)];
-	LibPNG.pngImageFinishRead(img, null, pixels, 0, null);
-}
-		\end{lstlisting}
-	\end{frame}
+% 		\begin{itemize}
+% 			\item Let's try libpng again\dots~ SWIG needs an interface/config file first
+% 		\end{itemize}
+
+% 		\begin{lstlisting}
+% %module LibPNG
+
+% %pragma(java) jniclasscode=%{ static {
+% 	System.loadLibrary("png");
+% 	System.loadLibrary("libpng_wrap");
+% } %}
+
+% %javaconst(1);
+% %rename("%(lowercamelcase)s", %$isfunction) "";
+% %rename("%(uppercase)s", %$isconstant) "";
+% // ...
+
+% %{ #include "png.h" %}
+% %import "limits.h"
+% %import "stddef.h"
+% %import "pngconf.h"
+% %import "pnglibconf.h"
+% %include "png.h"
+% 		\end{lstlisting}
+% 	\end{frame}
+
+% 	\begin{frame}[fragile]
+% 		\frametitle{A Quick Example}
+
+% 		\begin{itemize}
+% 			\item SWIG generates a Java class for every C type
+% 			\begin{itemize}
+% 				\item And a C wrapper file containing JNI glue code
+% 			\end{itemize}
+% 			\item Then from the Java world, it acts like any old Java library
+% 		\end{itemize}
+
+% 		\begin{lstlisting}[language=java]
+% package com.your.namespace;
+
+% public static void main(String args[]) {
+% 	var img = new PngImage();
+% 	img.setOpaque(null);
+% 	img.setVersion(LibPNG.PNG_IMAGE_VERSION);
+
+% 	LibPNG.pngImageBeginReadFromFile(img, "cat.png");
+% 	img.setFormat(LibPNG.PNG_FORMAT_RGBA);
+% 	var pixels = new byte[(int)(img.getWidth()*img.getHeight()*4)];
+% 	LibPNG.pngImageFinishRead(img, null, pixels, 0, null);
+% }
+% 		\end{lstlisting}
+% 	\end{frame}
 
 	\section{libandroid}
 
@@ -449,7 +456,7 @@ public static void main(String args[]) {
 		\frametitle{libandroid}
 
 		\begin{itemize}
-			\item So far, our native libraries can't really interact with Android
+			\item So far we can't really interact with Android
 			\begin{itemize}
 				\item Most Android APIs are only accessible from Java
 				% usually not much reason to use APIs from native code anyways
@@ -475,7 +482,7 @@ public static void main(String args[]) {
 		\end{itemize}
 	\end{frame}
 
-	\begin{frame}
+	\begin{frame}[fragile]
 		\frametitle{Example: Native Sensor API}
 
 		\begin{itemize}
@@ -484,16 +491,7 @@ public static void main(String args[]) {
 			\begin{itemize}
 				\item Using integrators at any degree of accuracy requires frequent polling
 			\end{itemize}
-			\item Similar to the Java API, we use SensorManager
-			\item Unlike Java, we hand prepare our own event queue
 		\end{itemize}
-
-	\end{frame}
-
-	\begin{frame}[fragile]
-		\frametitle{Example: Native Sensor API}
-
-
 
 		\begin{lstlisting}[language=c]
 ASensorManager* manager; ALooper* loop; ASensorEventQueue* queue;
@@ -507,7 +505,6 @@ void init() {
 	ASensorEventQueue_setEventRate(queue, accel, max(ASensor_getMinDelay(accel), 500));  // 500 us min
 	ASensorEventQueue_enableSensor(queue, accel);
 }
-
 // omitted for brevity: disabling the sensor!
 		\end{lstlisting}
 	\end{frame}
@@ -524,7 +521,7 @@ int sensor_update(int fd, int nevents, void *data) {
 	ASensorEventQueue_getEvents(queue, events, nevents)
 	for (int i = 0; i < nevents; i++) {
 		if (events[i].type == ASENSOR_TYPE_ACCELEROMETER) {
-			// perform Verlet integration
+			// perform Verlet or Euler integration
 			double dtime = (event.timestamp - lasttime) / 1000000.0d;
 			lasttime = event.timestamp;
 			vec3 new_acc = { events[i].acceleration.x, events[i].acceleration.y, events[i].acceleration.z };
@@ -542,20 +539,21 @@ int sensor_update(int fd, int nevents, void *data) {
 		\begin{itemize}
 			\item A lot of basic APIs in libandroid are ported from JNI
 			\begin{itemize}
-				\item Can always get access to a \lstinline{JEnv*} for other APIs with \lstinline{nactivity->vm->AttachCurrentThread(&jenv, NULL);}
+				\item Can get access to other APIs with a \lstinline{JEnv*}
 			\end{itemize}
 			\item But many have exclusive functionality
 			\begin{itemize}
 				\item The Sensor API has hardware-bound buffers and fast update rates
 				\item Realtime frame processing in the Camera API
 			\end{itemize}
-			\item Writing the entire activity in native code, with an OpenGL context
+			\item Writing the entire activity in native code
 			%
-			\item Dynamically linking to libandroid or using \lstinline{dlopen}
-			\begin{itemize}
-				\item Compromises in forwards-compatiblity
-				\item Alternative: weak linker references
-			\end{itemize}
+			\item Backwards-compatiblity with dynamic linking
+			% \item Dynamically linking to libandroid or using \lstinline{dlopen}
+			% \begin{itemize}
+			% 	\item Compromises in forwards-compatiblity
+			% 	\item Alternative: weak linker references
+			% \end{itemize}
 			\item Permissions must be requested through Java/JNI
 		\end{itemize}
 	\end{frame}
@@ -566,8 +564,8 @@ int sensor_update(int fd, int nevents, void *data) {
 		\frametitle{Questions?}
 
 		\begin{itemize}
-			\item We think we've covered stuff as throughly as we can
-			\item But if you still have questions, feel free to ask them via email
+			\item We covered a lot of stuff
+			\item If you have questions, feel free to ask them via email
 		\end{itemize}
 
 	\end{frame}
