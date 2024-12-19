@@ -8,7 +8,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-
-    <color name="bg">#FFECEFF1</color>  <!-- m2 blue gray 50 -->
-    <color name="primarybg">#FF26A69A</color>  <!-- m2 teal 400 -->
+    <color name="bg">#FF263238</color>  <!-- m2 blue gray 900 -->
+    <color name="primarybg">#FF00796B</color>  <!-- m2 teal 700 -->
 </resources>
