@@ -27,6 +27,7 @@ public class Local {
     public static synchronized void startWalk() {
         state.currentWalk = new ServerApi.AllWalkInfo();
         state.currentWalk.walk = new ServerApi.WalkInfo();
+        state.currentWalk.walk.rating = 0.5;
         state.currentWalk.conditions = new ServerApi.WalkInstanceInfo[0];
         state.currentWalk.walk.start = new Date();
     }
