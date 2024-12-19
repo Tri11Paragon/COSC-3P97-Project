@@ -34,18 +34,24 @@ public class Local {
         addThing(context, LocationTracker.bestLocation());
     }
 
+    private static synchronized void addCondition(WeatherApi. WeatherResult weather){
+        if(state.currentWalk == null)return;
+        ServerApi. WalkInstanceInfo[] conditions = new ServerApi.WalkInstanceInfo[state.currentWalk.conditions.length+1];
+        System.arraycopy(state.currentWalk.conditions, 0, conditions, 0, state.currentWalk.conditions.length);
+        conditions[state.currentWalk.conditions.length] = new ServerApi.WalkInstanceInfo();
+        conditions[state.currentWalk.conditions.length].time = weather.current.time;
+        conditions[state.currentWalk.conditions.length].conditions = weather.current;
+        conditions[state.currentWalk.conditions.length].lat = weather.latitude;
+        conditions[state.currentWalk.conditions.length].lon = weather.longitude;
+    }
+
     public static synchronized void addThing(Context context, Location location){
-        WeatherApi.request(context, new WeatherApi.WeatherRequest(location), weather -> {
-            synchronized (Local.class){
-                ServerApi. WalkInstanceInfo[] conditions = new ServerApi.WalkInstanceInfo[state.currentWalk.conditions.length+1];
-                System.arraycopy(state.currentWalk.conditions, 0, conditions, 0, state.currentWalk.conditions.length);
-                conditions[state.currentWalk.conditions.length] = new ServerApi.WalkInstanceInfo();
-                conditions[state.currentWalk.conditions.length].time = weather.current.time;
-                conditions[state.currentWalk.conditions.length].conditions = weather.current;
-                conditions[state.currentWalk.conditions.length].lat = weather.latitude;
-                conditions[state.currentWalk.conditions.length].lon = weather.longitude;
-            }
-        }, Util.toastFail(context, "Cannot weather"));
+        WeatherApi.request(
+            context,
+            new WeatherApi.WeatherRequest(location),
+            Local::addCondition,
+            Util.toastFail(context, "Cannot weather")
+        );
     }
 
     public static synchronized void endWalk(Context context){

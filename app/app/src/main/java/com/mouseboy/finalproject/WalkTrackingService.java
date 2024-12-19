@@ -119,7 +119,7 @@ public class WalkTrackingService extends Service {
     @Override
     public void onDestroy() {
         Logger.getGlobal().log(Level.INFO, "Destroy: " + this);
-        Local.endWalk(this);
         LocationTracker.removeListener(listener);
+        Local.endWalk(this);
     }
 }
