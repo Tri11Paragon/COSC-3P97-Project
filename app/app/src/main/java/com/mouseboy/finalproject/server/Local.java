@@ -11,17 +11,24 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class Local {
     private static ServerApi.User currentUser = null;
     private static Information state = new Information();
+
 
     private static class Information{
         final ArrayList<ServerApi.AllWalkInfo> walks = new ArrayList<>();
         ServerApi.AllWalkInfo currentWalk;
     }
 
-    public static synchronized void addWalk(){
+
+    public static List<ServerApi.WalkInfo> getWalks(Date start, Date end) {
+        return new ArrayList<>();
+    }
+    public static synchronized void addWalk(ServerApi.AllWalkInfo allWalk){
 
     }
 

@@ -12,9 +12,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.mouseboy.finalproject.server.Local;
 import com.mouseboy.finalproject.server.ServerApi;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class WalkListDisplayFragment extends Fragment {
 
@@ -31,6 +33,7 @@ public class WalkListDisplayFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (savedInstanceState == null) {
+            Local.getWalks(new Date(0), new Date(Long.MAX_VALUE));
             // TODO: import walk
 
         } else
