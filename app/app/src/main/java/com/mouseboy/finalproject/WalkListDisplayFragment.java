@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -42,24 +43,23 @@ public class WalkListDisplayFragment extends Fragment {
                 e -> {
                     // TODO: import walk
                     items.addAll(Arrays.asList(e));
-                    update_items();
                 },
                 Util.toastFail(requireContext(), "Failed to Update Walk")
             );
-        } else
+        } else {
             items = (ArrayList<ServerApi.WalkInfo>) savedInstanceState.getSerializable("LocalWalks");
-        update_items();
+        }
 
         ListView listView = requireView().findViewById(R.id.walkListView);
+        listView.setAdapter(new ArrayListAdaptor(requireContext(), items));
         listView.setOnItemClickListener(this::handle_click);
         listView.requestFocus();
     }
 
 
-    void update_items(){
+    void update_items() {
         ListView listView = requireView().findViewById(R.id.walkListView);
-        ArrayListAdaptor adapter = new ArrayListAdaptor(requireContext(), items);
-        listView.setAdapter(adapter);
+        ((ArrayAdapter) listView.getAdapter()).notifyDataSetChanged();
     }
 
     @Override
@@ -73,10 +73,6 @@ public class WalkListDisplayFragment extends Fragment {
         super.onResume();
 
         update_items();
-
-        ListView listView = requireView().findViewById(R.id.walkListView);
-        listView.setOnItemClickListener(this::handle_click);
-        listView.requestFocus();
     }
 
     void handle_click(AdapterView<?> parent, View item_views, int position, long id) {
@@ -87,8 +83,8 @@ public class WalkListDisplayFragment extends Fragment {
 
     void switch_to_fragment(WalkDisplayFragment fragment){
         FragmentManager manager = requireActivity().getSupportFragmentManager();
-        Fragment meetingDetailFragment = manager.findFragmentById(R.id.fragment_detail_container);
-        if (meetingDetailFragment != null) {
+        Fragment walkDetailFragment = manager.findFragmentById(R.id.fragment_detail_container);
+        if (walkDetailFragment != null) {
             manager.popBackStack();
             manager.beginTransaction()
                 .setCustomAnimations(0, android.R.anim.fade_out)
@@ -137,4 +133,3 @@ public class WalkListDisplayFragment extends Fragment {
         update_items();
     }
 }
-

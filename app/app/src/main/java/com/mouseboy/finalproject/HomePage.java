@@ -141,10 +141,14 @@ public class HomePage extends Fragment implements Runnable {
                     System.out.println(weather);
                     ServerApi.analyzeWalkConditions(requireContext(), new ServerApi.Meow(Local.getCurrentUser().id, weather.current), parker -> {
                         if (parker > 0.5) {
-                            status.setText("Favourable");
+                            status.setText(String.format(
+                                "Favourable (%d%%)", Math.round(parker*100)
+                            ));
                             status.setTextColor(Color.rgb(25, 200, 25));
                         } else {
-                            status.setText("Unfavourable");
+                            status.setText(String.format(
+                                "Unfavourable (%d%%)", Math.round(parker*100)
+                            ));
                             status.setTextColor(Color.rgb(200, 25, 25));
                         }
                     }, error -> {

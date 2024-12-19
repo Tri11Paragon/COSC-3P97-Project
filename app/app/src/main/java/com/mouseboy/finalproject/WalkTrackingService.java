@@ -16,6 +16,7 @@ import android.os.Build;
 import com.mouseboy.finalproject.server.Local;
 import com.mouseboy.finalproject.weather.LocationTracker;
 
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,9 +24,9 @@ public class WalkTrackingService extends Service {
     static final String NOTIFICATION_CHANNEL = "service";
 
     public synchronized static boolean start(Context context){
-        if(isRunning(context)){
+        if (isRunning(context)) {
             return false;
-        }else{
+        } else {
             Intent intent = new Intent(context, WalkTrackingService.class);
             context.startService(intent);
             return true;
@@ -53,7 +54,7 @@ public class WalkTrackingService extends Service {
         Logger.getGlobal().log(Level.INFO, "onCreate: " + this);
     }
 
-    private Notification createNotification() {
+    private Notification createNotification(Date walkStart) {
         Notification.Builder builder;
         // api 26 requires a notification channel for new notifications
         if (Build.VERSION.SDK_INT >= 26) {
@@ -87,6 +88,9 @@ public class WalkTrackingService extends Service {
             .setSmallIcon(android.R.drawable.ic_popup_disk_full)
             .setSmallIcon(android.R.drawable.star_big_on)
             .setContentIntent(resultPendingIntent)
+            .setUsesChronometer(true)
+            .setShowWhen(true)
+            .setWhen(walkStart.getTime())
             // setting HIGH plays a sound
             .setPriority(Notification.PRIORITY_DEFAULT)
             .build();
@@ -102,9 +106,11 @@ public class WalkTrackingService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Logger.getGlobal().log(Level.INFO, "Start: " + this);
 
+        // todo: expose the actual start time from Local.currentWalk
+        var start = new Date();
         Local.startWalk(this);
 
-        startForeground(1, createNotification());
+        startForeground(1, createNotification(start));
         listener = this::locationUpdate;
         LocationTracker.addListener(listener);
 
