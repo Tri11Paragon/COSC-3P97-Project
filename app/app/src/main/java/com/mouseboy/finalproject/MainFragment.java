@@ -1,11 +1,9 @@
 package com.mouseboy.finalproject;
 
-import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,16 +12,6 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-import com.google.gson.GsonBuilder;
-import com.mouseboy.finalproject.server.ServerApi;
-import com.mouseboy.finalproject.util.Util;
-import com.mouseboy.finalproject.weather.LocationTracker;
-import com.mouseboy.finalproject.weather.WeatherApi;
-
-import java.lang.reflect.Field;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class MainFragment extends Fragment {
 

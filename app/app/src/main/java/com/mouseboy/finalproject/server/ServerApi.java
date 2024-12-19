@@ -206,6 +206,11 @@ public class ServerApi {
     public static class Meow{
         public String user_id;
         public WeatherApi.WeatherResult.CurrentWeather conditions;
+
+        public Meow(String user_id, WeatherApi.WeatherResult.CurrentWeather conditions) {
+            this.user_id = user_id;
+            this.conditions = conditions;
+        }
     }
 
     public static void analyzeWalkConditions(Context context, Meow meow,  OkHttp.OnResponse<Float> response, OkHttp.OnFailure error){

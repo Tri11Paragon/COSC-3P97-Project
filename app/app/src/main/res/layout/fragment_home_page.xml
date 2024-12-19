@@ -22,6 +22,31 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/current_conditions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Current Conditions"
+            android:layout_marginTop="32dp"
+            android:layout_gravity="center"
+            android:textSize="28sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/elapsed_time"/>
+
+        <TextView
+            android:id="@+id/current_conditions_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Favourable"
+            android:textColor="#FF00DD00"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center"
+            android:textSize="28sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/current_conditions"/>
+
         <Button
             android:id="@+id/startWalkButton"
             android:layout_width="0dp"
@@ -38,7 +63,7 @@
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/elapsed_time"
+            app:layout_constraintTop_toBottomOf="@id/current_conditions_status"
             app:layout_constraintWidth_percent="0.5" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
