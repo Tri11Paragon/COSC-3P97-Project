@@ -8,16 +8,16 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.mouseboy.finalproject.server.Walk;
+import com.mouseboy.finalproject.server.ServerApi;
 
 import java.util.List;
 
-public class ArrayListAdaptor extends ArrayAdapter<Walk> {
+public class ArrayListAdaptor extends ArrayAdapter<ServerApi.WalkInfo> {
 
     private final Context context;
-    private final List<Walk> items;
+    private final List<ServerApi.WalkInfo> items;
 
-    public ArrayListAdaptor(Context context, List<Walk> items) {
+    public ArrayListAdaptor(Context context, List<ServerApi.WalkInfo> items) {
         super(context, android.R.layout.simple_list_item_1, items);
         this.context = context;
         this.items = items;
@@ -31,12 +31,12 @@ public class ArrayListAdaptor extends ArrayAdapter<Walk> {
         }
 
         // Get the current item
-        Walk currentItem = items.get(position);
+        ServerApi.WalkInfo currentItem = items.get(position);
 
         // Populate the layout with data
         TextView itemText = convertView.findViewById(android.R.id.text1);
 
-        itemText.setText(currentItem.toString());
+        itemText.setText(currentItem.name);
 
         return convertView;
     }

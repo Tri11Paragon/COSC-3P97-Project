@@ -12,13 +12,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.mouseboy.finalproject.server.Walk;
+import com.mouseboy.finalproject.server.ServerApi;
 
 import java.util.ArrayList;
 
 public class WalkListDisplayFragment extends Fragment {
 
-    ArrayList<Walk> items = new ArrayList<>();
+    ArrayList<ServerApi.WalkInfo> items = new ArrayList<>();
 
     @Nullable
     @Override
@@ -32,12 +32,9 @@ public class WalkListDisplayFragment extends Fragment {
 
         if (savedInstanceState == null) {
             // TODO: import walk
-            items.add(new Walk());
-            items.add(new Walk());
-            items.add(new Walk());
-            items.add(new Walk());
+
         } else
-            items = (ArrayList<Walk>) savedInstanceState.getSerializable("LocalWalks");
+            items = (ArrayList<ServerApi.WalkInfo>) savedInstanceState.getSerializable("LocalWalks");
         update_items();
 
         ListView listView = requireView().findViewById(R.id.walkListView);
@@ -69,8 +66,8 @@ public class WalkListDisplayFragment extends Fragment {
     }
 
     void handle_click(AdapterView<?> parent, View item_views, int position, long id) {
-        Walk selectedItem = items.get(position);
-        WalkDisplayFragment detailFragment = WalkDisplayFragment.newInstance(selectedItem);
+        ServerApi.WalkInfo selectedItem = items.get(position);
+        WalkDisplayFragment detailFragment = WalkDisplayFragment.newInstance(selectedItem, this);
         switch_to_fragment(detailFragment);
     }
 
@@ -91,6 +88,14 @@ public class WalkListDisplayFragment extends Fragment {
                 .addToBackStack(null)
                 .commit();
         }
+    }
+
+    void update_walk(ServerApi.WalkInfo walk){
+
+    }
+
+    void delete_walk(ServerApi.WalkInfo walk){
+
     }
 
     void pop() {

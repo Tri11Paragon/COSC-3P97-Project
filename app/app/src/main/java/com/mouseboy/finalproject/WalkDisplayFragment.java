@@ -23,15 +23,13 @@ public class WalkDisplayFragment extends Fragment {
 
     private static final String ARG_WALK = "TheWalk";
     private final WalkListDisplayFragment list;
-    private final ArrayList<ServerApi.WalkInfo> walks;
 
-    WalkDisplayFragment(WalkListDisplayFragment list, ArrayList<ServerApi.WalkInfo> walks) {
+    WalkDisplayFragment(WalkListDisplayFragment list) {
         this.list = list;
-        this.walks = walks;
     }
 
-    public static WalkDisplayFragment newInstance(ServerApi.WalkInfo walk, WalkListDisplayFragment list, ArrayList<ServerApi.WalkInfo> walks) {
-        WalkDisplayFragment fragment = new WalkDisplayFragment(list, walks);
+    public static WalkDisplayFragment newInstance(ServerApi.WalkInfo walk, WalkListDisplayFragment list) {
+        WalkDisplayFragment fragment = new WalkDisplayFragment(list);
         Bundle args = new Bundle();
         args.putSerializable(ARG_WALK, walk);
         fragment.setArguments(args);
@@ -59,6 +57,7 @@ public class WalkDisplayFragment extends Fragment {
                 if (lwalk == null)
                     return;
 
+                list.update_walk(lwalk);
                 Local.updateWalk(lwalk);
             }
 
@@ -85,6 +84,10 @@ public class WalkDisplayFragment extends Fragment {
                 if (lwalk == null)
                     return;
 
+                lwalk.name = s.toString();
+
+                list.update_walk(lwalk);
+                Local.updateWalk(lwalk);
             }
 
             @Override
@@ -92,6 +95,28 @@ public class WalkDisplayFragment extends Fragment {
             }
         });
         ((EditText) view.findViewById(R.id.detailDescription)).setText(title.comment);
+        ((EditText) view.findViewById(R.id.detailDescription)).addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                ServerApi.WalkInfo lwalk = getArguments() != null ? (ServerApi.WalkInfo) getArguments().getSerializable(ARG_WALK) : null;
+
+                if (lwalk == null)
+                    return;
+
+                lwalk.comment = s.toString();
+
+                list.update_walk(lwalk);
+                Local.updateWalk(lwalk);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
         ((TextView) view.findViewById(R.id.started)).setText(title.start.toString());
         ((TextView) view.findViewById(R.id.ended)).setText(title.end.toString());
 
@@ -101,8 +126,7 @@ public class WalkDisplayFragment extends Fragment {
             if (lwalk == null)
                 return;
 
-            walks.remove(lwalk);
-            list.update_items();
+            list.delete_walk(lwalk);
 
             Local.deleteWalk(lwalk);
             list.pop();
