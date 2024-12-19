@@ -1,10 +1,13 @@
 package com.mouseboy.finalproject.server;
 
 import android.content.Context;
+import android.location.Location;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.mouseboy.finalproject.util.OkHttp;
 import com.mouseboy.finalproject.util.Util;
+import com.mouseboy.finalproject.weather.WeatherApi;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,14 +15,46 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.stream.Stream;
 
 public class Local {
     private static ServerApi.User currentUser = null;
     private static Information state = new Information();
+
+    public static synchronized void startWalk() {
+        state.currentWalk = new ServerApi.AllWalkInfo();
+        state.currentWalk.walk = new ServerApi.WalkInfo();
+        state.currentWalk.conditions = new ServerApi.WalkInstanceInfo[0];
+        state.currentWalk.walk.start = new Date();
+    }
+
+    public static synchronized void addThing(Context context, Location location){
+        WeatherApi.request(context, new WeatherApi.WeatherRequest(location), weather -> {
+            synchronized (Local.class){
+                ServerApi. WalkInstanceInfo[] conditions = new ServerApi.WalkInstanceInfo[state.currentWalk.conditions.length+1];
+                System.arraycopy(state.currentWalk.conditions, 0, conditions, 0, state.currentWalk.conditions.length);
+                conditions[state.currentWalk.conditions.length] = new ServerApi.WalkInstanceInfo();
+                conditions[state.currentWalk.conditions.length].time = weather.current.time;
+                conditions[state.currentWalk.conditions.length].conditions = weather.current;
+                conditions[state.currentWalk.conditions.length].lat = weather.latitude;
+                conditions[state.currentWalk.conditions.length].lon = weather.longitude;
+            }
+        }, Util.toastFail(context, "Cannot weather"));
+    }
+
+    public static synchronized void endWalk(Context context){
+        state.currentWalk.walk.end = new Date();
+        createWalk(context, state.currentWalk, v -> {}, Util.toastFail(context, "Failed to end walk"));
+        state.currentWalk = null;
+    }
+
+    public synchronized static Date startOfCurrentWalk(){
+        if(state.currentWalk == null){
+            return null;
+        }else{
+            return state.currentWalk.walk.start;
+        }
+    }
 
 
     private static class Information{
@@ -74,6 +109,7 @@ public class Local {
     }
 
     public static synchronized void deleteWalk(Context context, int walk_id, OkHttp.OnResponse<Void> response, OkHttp.OnFailure error){
+
         if(state.walks.removeIf(v -> v.walk.id == walk_id)){
             save(context);
             response.onResponse(null);
@@ -87,6 +123,7 @@ public class Local {
 
     private static synchronized void createWalk(Context context, ServerApi.AllWalkInfo info, OkHttp.OnResponse<Integer> response, OkHttp.OnFailure error){
         if(isUserLoggedIn()){
+            info.user_id = Local.getCurrentUser().id;
             ServerApi.createWalk(context, info, response, error);
         }else{
             info.walk.id = state.curr_walk_id--;

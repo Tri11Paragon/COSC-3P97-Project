@@ -41,6 +41,10 @@ public class ServerApi {
         public WalkInfo walk;
         public WalkInstanceInfo[] conditions;
 
+        public AllWalkInfo(){
+
+        }
+
         public AllWalkInfo(String user_id, WalkInfo walk, WalkInstanceInfo[] conditions) {
             this.user_id = user_id;
             this.walk = walk;

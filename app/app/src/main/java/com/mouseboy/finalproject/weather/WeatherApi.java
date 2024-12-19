@@ -20,7 +20,19 @@ public class WeatherApi {
     }
 
     public static class WeatherRequest {
+
+        transient Location loc;
+        transient TimeZone timeZone;
         CurrentWeather currentWeather = new CurrentWeather();
+
+        public WeatherRequest(){
+            loc = LocationTracker.bestLocation();
+            timeZone = timezone();
+        }
+        public WeatherRequest(Location loc){
+            this.loc = loc;
+            timeZone = timezone();
+        }
 
         public static class CurrentWeather {
             public boolean temperature_2m = true;
@@ -60,13 +72,13 @@ public class WeatherApi {
             }
         }
 
-        private String toRequest(Location loc, TimeZone zone) {
+        private String toRequest() {
             String locS = "";
             if (loc != null) {
                 locS = "latitude=" + loc.getLatitude() + "&longitude=" + loc.getLongitude();
             }
             String zoneS = "timezone=auto";
-            if (zone != null) {
+            if (timeZone != null) {
                 zoneS = "timezone=" + URLEncoder.encode(timezone().getID());
             }
             return "https://api.open-meteo.com/v1/forecast?" + locS + "&" + zoneS + "&timeformat=unixtime&" + currentWeather;
@@ -128,7 +140,7 @@ public class WeatherApi {
     public static void request(Context context, WeatherRequest request, OkHttp.OnResponse<WeatherResult> response, OkHttp.OnFailure error) {
         OkHttp.getJson(
                 context,
-                request.toRequest(LocationTracker.bestLocation(), timezone()),
+                request.toRequest(),
                 WeatherResult.class,
                 response,
                 error

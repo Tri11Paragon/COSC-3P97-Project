@@ -67,13 +67,15 @@ public class WalkTrackingService extends Service {
     }
 
     private void locationUpdate(Location loc){
-
+        Local.addThing(this, loc);
     }
 
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Logger.getGlobal().log(Level.INFO, "Start: " + this);
+
+        Local.startWalk();
 
         startForeground(1, createNotification());
         LocationTracker.addListener(this::locationUpdate);
@@ -89,7 +91,7 @@ public class WalkTrackingService extends Service {
     @Override
     public void onDestroy() {
         Logger.getGlobal().log(Level.INFO, "Destroy: " + this);
-        Local.save(this);
+        Local.endWalk(this);
         LocationTracker.startWithPerms(this);
     }
 }
