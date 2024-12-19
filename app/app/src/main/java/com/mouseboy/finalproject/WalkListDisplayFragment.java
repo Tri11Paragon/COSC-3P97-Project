@@ -17,6 +17,7 @@ import com.mouseboy.finalproject.server.ServerApi;
 import com.mouseboy.finalproject.util.Util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Date;
 
@@ -40,6 +41,7 @@ public class WalkListDisplayFragment extends Fragment {
                 new Date(0), new Date(Long.MAX_VALUE),
                 e -> {
                     // TODO: import walk
+                    items = (ArrayList<ServerApi.WalkInfo>) Arrays.asList(e);
                 },
                 Util.toastFail(requireContext(), "Failed to Update Walk")
             );
