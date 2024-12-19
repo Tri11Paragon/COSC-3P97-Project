@@ -176,7 +176,7 @@ public class ServerApi {
     public static void listWalks(Context context, ListWalks listWalks, OkHttp.OnResponse<WalkInfo[]> response, OkHttp.OnFailure error){
         postJson(
             context,
-        SERVER_API_DB + "list_walks",
+            SERVER_API_DB + "list_walks",
             listWalks,
             WalkInfo[].class,
             response,
@@ -227,12 +227,12 @@ public class ServerApi {
 
     public static void analyzeWalkConditions(Context context, Meow meow,  OkHttp.OnResponse<Float> response, OkHttp.OnFailure error){
         postJson(
-                context,
-                SERVER_API_ANALYSIS + "analyze_walk_conditions",
-                meow,
-                Float.class,
-                response,
-                error
+            context,
+            SERVER_API_ANALYSIS + "analyze_walk_conditions",
+            meow,
+            Float.class,
+            response,
+            error
         );
     }
 }
