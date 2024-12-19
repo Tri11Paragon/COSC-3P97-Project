@@ -55,7 +55,11 @@ public class HomePage extends Fragment implements Runnable {
 
         timer = () -> {
             TextView test = requireView().findViewById(R.id.elapsed_time);
+            if (WalkTrackingService.isRunning(requireContext())){
 
+            } else {
+                test.setText("");
+            }
             handler2.postDelayed(timer, 1000);
         };
 
