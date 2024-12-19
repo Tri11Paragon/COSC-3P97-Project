@@ -41,7 +41,8 @@ public class WalkListDisplayFragment extends Fragment {
                 new Date(0), new Date(Long.MAX_VALUE),
                 e -> {
                     // TODO: import walk
-                    items = (ArrayList<ServerApi.WalkInfo>) Arrays.asList(e);
+                    items.addAll(Arrays.asList(e));
+                    update_items();
                 },
                 Util.toastFail(requireContext(), "Failed to Update Walk")
             );
@@ -110,6 +111,7 @@ public class WalkListDisplayFragment extends Fragment {
                 break;
             }
         }
+        update_items();
     }
 
     void delete_walk(ServerApi.WalkInfo walk){
@@ -124,11 +126,15 @@ public class WalkListDisplayFragment extends Fragment {
 
         if (index >= 0)
             items.remove(index);
+
+        update_items();
     }
 
     void pop() {
         FragmentManager manager = requireActivity().getSupportFragmentManager();
         manager.popBackStack();
+
+        update_items();
     }
 }
 

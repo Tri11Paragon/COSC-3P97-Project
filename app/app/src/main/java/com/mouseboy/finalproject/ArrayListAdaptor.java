@@ -36,7 +36,7 @@ public class ArrayListAdaptor extends ArrayAdapter<ServerApi.WalkInfo> {
         // Populate the layout with data
         TextView itemText = convertView.findViewById(android.R.id.text1);
 
-        itemText.setText(currentItem.name);
+        itemText.setText((currentItem.name == null || currentItem.name.isEmpty()) ? currentItem.end.toString() : currentItem.name);
 
         return convertView;
     }
