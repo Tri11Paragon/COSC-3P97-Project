@@ -15,7 +15,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 public class Local {
     private static ServerApi.User currentUser = null;
@@ -63,14 +66,10 @@ public class Local {
         int curr_walk_id = -1;
     }
 
-    void sort(){
-//        Object[] array = data.toArray();
-//        Arrays.sort(array, (a, b) -> Util.compare_to(((Meeting)a).getDate(), ((Meeting)b).getDate()));
-//        data.clear();
-//        for (Object o : array)
-//            data.add((Meeting)o);
-//
-//        super.notifyDataSetChanged();
+    static <T> T[] sort(List<T> data, T[] p, Comparator<T> cmp){
+        T[] array = data.toArray(p);
+        Arrays.sort(array, cmp);
+        return array;
     }
 
     public static synchronized void listWalks(Context context, Date start, Date end, OkHttp.OnResponse<ServerApi.WalkInfo[]> response, OkHttp.OnFailure error){
@@ -82,15 +81,14 @@ public class Local {
                 walks.add(new Gson().fromJson(new Gson().toJson(walk), ServerApi.WalkInfo.class));
             }
         }
-//        if(isUserLoggedIn())
-//            ServerApi.listWalks(context, new ServerApi.ListWalks(getCurrentUser().id, start, end), nl -> {
-//                response.onResponse(Stream.concat(Arrays.stream(nl), localStream)
-//                    .toArray(ServerApi.WalkInfo[]::new));
-//            }, error);
-//        else{
-//            response.onResponse(localStream
-//                .toArray(ServerApi.WalkInfo[]::new));
-//        }
+        if(isUserLoggedIn())
+            ServerApi.listWalks(context, new ServerApi.ListWalks(getCurrentUser().id, start, end), nl -> {
+                walks.addAll(Arrays.asList(nl));
+                response.onResponse(sort(walks, new ServerApi.WalkInfo[0], (walkInfo, t1) -> walkInfo.start.compareTo(t1.start)));
+            }, error);
+        else{
+            response.onResponse(sort(walks, new ServerApi.WalkInfo[0], (walkInfo, t1) -> walkInfo.start.compareTo(t1.start)));
+        }
     }
 
     public static synchronized void listWalkInfo(Context context, int walk_id, OkHttp.OnResponse<ServerApi.WalkInstanceInfo[]> response, OkHttp.OnFailure error){
