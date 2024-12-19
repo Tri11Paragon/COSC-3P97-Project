@@ -22,7 +22,7 @@ public class Local {
     }
 
 
-    public static void addWalk(){
+    public static synchronized void addWalk(){
 
     }
 

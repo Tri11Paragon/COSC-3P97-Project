@@ -18,10 +18,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FinalProject"
         tools:targetApi="31">
+
         <service
             android:name=".WalkTrackingService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:foregroundServiceType="location"
+            android:exported="true" />
 
         <activity
             android:name=".MainActivity"
