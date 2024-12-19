@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import com.mouseboy.finalproject.server.Local;
 import com.mouseboy.finalproject.server.ServerApi;
+import com.mouseboy.finalproject.util.Util;
 
 import java.util.ArrayList;
 
@@ -58,7 +59,12 @@ public class WalkDisplayFragment extends Fragment {
                     return;
 
                 list.update_walk(lwalk);
-                Local.updateWalk(lwalk);
+                Local.updateWalk(
+                    requireContext(),
+                    new ServerApi.WalkInfoUpdate(lwalk.id, lwalk.rating, lwalk.name, lwalk.comment),
+                    e -> {},
+                    Util.toastFail(requireContext(), "Failed to Update Walk")
+                );
             }
 
             @Override
@@ -87,7 +93,12 @@ public class WalkDisplayFragment extends Fragment {
                 lwalk.name = s.toString();
 
                 list.update_walk(lwalk);
-                Local.updateWalk(lwalk);
+                Local.updateWalk(
+                    requireContext(),
+                    new ServerApi.WalkInfoUpdate(lwalk.id, lwalk.rating, lwalk.name, lwalk.comment),
+                    e -> {},
+                    Util.toastFail(requireContext(), "Failed to Update Walk")
+                );
             }
 
             @Override
@@ -110,7 +121,12 @@ public class WalkDisplayFragment extends Fragment {
                 lwalk.comment = s.toString();
 
                 list.update_walk(lwalk);
-                Local.updateWalk(lwalk);
+                Local.updateWalk(
+                    requireContext(),
+                    new ServerApi.WalkInfoUpdate(lwalk.id, lwalk.rating, lwalk.name, lwalk.comment),
+                    e -> {},
+                    Util.toastFail(requireContext(), "Failed to Update Walk")
+                );
             }
 
             @Override
@@ -128,7 +144,12 @@ public class WalkDisplayFragment extends Fragment {
 
             list.delete_walk(lwalk);
 
-            Local.deleteWalk(lwalk);
+            Local.deleteWalk(
+                requireContext(),
+                lwalk.id,
+                e -> {},
+                Util.toastFail(requireContext(), "Failed to Delete Walk")
+            );
             list.pop();
         });
 

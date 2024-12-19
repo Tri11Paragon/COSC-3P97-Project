@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.mouseboy.finalproject.server.Local;
 import com.mouseboy.finalproject.server.ServerApi;
+import com.mouseboy.finalproject.util.Util;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -34,8 +35,14 @@ public class WalkListDisplayFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (savedInstanceState == null) {
-            Local.getWalks(new Date(0), new Date(Long.MAX_VALUE));
-            // TODO: import walk
+            Local.listWalks(
+                requireContext(),
+                new Date(0), new Date(Long.MAX_VALUE),
+                e -> {
+                    // TODO: import walk
+                },
+                Util.toastFail(requireContext(), "Failed to Update Walk")
+            );
 
         } else
             items = (ArrayList<ServerApi.WalkInfo>) savedInstanceState.getSerializable("LocalWalks");
