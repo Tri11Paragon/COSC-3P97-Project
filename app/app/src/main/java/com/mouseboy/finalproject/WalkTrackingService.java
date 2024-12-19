@@ -82,8 +82,9 @@ public class WalkTrackingService extends Service {
             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
-        return builder.setContentTitle("My Background Task")
-            .setContentText("Task is running")
+        return builder.setContentTitle("Bawahhalking In Progress")
+            .setContentText("Walk Her? I hardly knew her")
+            .setSmallIcon(android.R.drawable.ic_popup_disk_full)
             .setSmallIcon(android.R.drawable.star_big_on)
             .setContentIntent(resultPendingIntent)
             // setting HIGH plays a sound

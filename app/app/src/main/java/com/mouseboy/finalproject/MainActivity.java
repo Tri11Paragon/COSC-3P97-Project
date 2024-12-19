@@ -86,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void user_logout(Activity context){
+        if (WalkTrackingService.isRunning(context))
+            WalkTrackingService.stop(context);
         SharedPreferences prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
         prefs.edit().remove("username").remove("token").apply();
         Local.logout();
