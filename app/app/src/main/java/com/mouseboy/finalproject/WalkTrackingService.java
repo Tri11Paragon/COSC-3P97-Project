@@ -2,6 +2,8 @@ package com.mouseboy.finalproject;
 
 import android.app.ActivityManager;
 import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.NotificationChannel;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.app.TaskStackBuilder;
@@ -9,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.IBinder;
+import android.os.Build;
 
 import com.mouseboy.finalproject.server.Local;
 import com.mouseboy.finalproject.weather.LocationTracker;
@@ -17,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class WalkTrackingService extends Service {
+    static final String NOTIFICATION_CHANNEL = "service";
 
     public synchronized static boolean start(Context context){
         if(isRunning(context)){
@@ -50,19 +54,40 @@ public class WalkTrackingService extends Service {
     }
 
     private Notification createNotification() {
-        Intent resultIntent = new Intent(this, MainActivity.class);
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addNextIntentWithParentStack(resultIntent);
-        PendingIntent resultPendingIntent =
-            stackBuilder.getPendingIntent(0,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        Notification.Builder builder;
+        // api 26 requires a notification channel for new notifications
+        if (Build.VERSION.SDK_INT >= 26) {
+            var channel = new NotificationChannel(
+                NOTIFICATION_CHANNEL, "Walk Tracking", NotificationManager.IMPORTANCE_DEFAULT
+            );
+            channel.setDescription("Notifications to indicate that a walk is active");
+            channel.enableLights(false);
+            channel.enableVibration(false);
+            channel.setBypassDnd(true);
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 
-        return new Notification.Builder(this)
-            .setContentTitle("My Background Task")
+            ((NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE))
+                .createNotificationChannel(channel);
+
+            builder = new Notification.Builder(this, NOTIFICATION_CHANNEL);
+        } else {
+            builder = new Notification.Builder(this);
+        }
+
+        var resultIntent = new Intent(this, MainActivity.class);
+        var stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addNextIntentWithParentStack(resultIntent);
+        var resultPendingIntent = stackBuilder.getPendingIntent(
+            0,
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        return builder.setContentTitle("My Background Task")
             .setContentText("Task is running")
             .setSmallIcon(android.R.drawable.star_big_on)
             .setContentIntent(resultPendingIntent)
-            .setPriority(Notification.PRIORITY_HIGH)
+            // setting HIGH plays a sound
+            .setPriority(Notification.PRIORITY_DEFAULT)
             .build();
     }
 
