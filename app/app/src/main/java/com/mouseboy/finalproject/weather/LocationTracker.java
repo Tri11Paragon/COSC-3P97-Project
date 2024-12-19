@@ -4,14 +4,18 @@ import static androidx.core.content.ContextCompat.getSystemService;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Service;
+import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 
+import androidx.activity.ComponentActivity;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import com.mouseboy.finalproject.MainActivity;
 
@@ -23,7 +27,7 @@ public class LocationTracker {
 
     private static Location curr;
     private static final ArrayList<LocationListeners> listeners = new ArrayList<>();
-    private static ActivityResultLauncher<String[]> requester;
+
 
     public static Location bestLocation() {
         return curr;
@@ -40,35 +44,8 @@ public class LocationTracker {
         }
     }
 
-    public static synchronized void start(MainActivity context) {
-        listeners.clear();
-        requester = context.registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), g -> {
-            boolean g2 = true;
-            for (boolean entry : g.values()) {
-                g2 &= entry;
-            }
-            if (!g2) {
-                new AlertDialog.Builder(context)
-                        .setTitle("Permission Needed")
-                        .setCancelable(false)
-                        .setPositiveButton("OK", (dialog, which) -> perms(context, false)).create().show();
-            } else {
-                perms(context, true);
-            }
-        });
-        perms(context, false);
-    }
-
-    private static void perms(MainActivity context, boolean granted) {
-        if (granted) {
-            startWithPerms(context);
-        } else {
-            requester.launch(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION});
-        }
-    }
-
     @SuppressLint("MissingPermission")//checked before
-    private static synchronized void startWithPerms(MainActivity context) {
+    public static synchronized void startWithPerms(Context context) {
         LocationManager lm = getSystemService(context, LocationManager.class);
 
         assert lm != null;

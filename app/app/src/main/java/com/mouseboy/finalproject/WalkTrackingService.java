@@ -1,14 +1,14 @@
 package com.mouseboy.finalproject;
 
+import android.app.ActivityManager;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
-import android.widget.Toast;
 
 import com.mouseboy.finalproject.server.Local;
 import com.mouseboy.finalproject.weather.LocationTracker;
@@ -17,82 +17,79 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class WalkTrackingService extends Service {
-    private Looper serviceLooper;
-    private ServiceHandler serviceHandler;
 
-    public static class Close{}
-
-    private final class ServiceHandler extends Handler {
-        public ServiceHandler(Looper looper) {
-            super(looper);
+    public synchronized static boolean start(Context context){
+        if(isRunning(context)){
+            return false;
+        }else{
+            Intent intent = new Intent(context, WalkTrackingService.class);
+            context.startService(intent);
+            return true;
         }
+    }
 
-        @Override
-        public void handleMessage(Message msg) {
-            // Normally we would do some work here, like download a file.
-            // For our sample, we just sleep for 5 seconds.
-            if(msg.obj instanceof Location){
-                Location l = (Location) msg.obj;
-                Logger.getGlobal().log(Level.SEVERE, "meow" + l.getLongitude());
+    public synchronized static void stop(Context context){
+        context.stopService(new Intent(context, WalkTrackingService.class));
+    }
+
+    public static boolean isRunning(Context context) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (WalkTrackingService.class.getName().equals(service.service.getClassName())) {
+                return true;
             }
-            if(msg.obj instanceof Close){
-                stopSelf(msg.arg1);
-            }
-//            try {
-//                Thread.sleep(5000);
-//            } catch (InterruptedException e) {
-//                // Restore interrupt status.
-//                Thread.currentThread().interrupt();
-//            }
-            // Stop the service using the startId, so that we don't stop
-            // the service in the middle of handling another job
         }
+        return false;
     }
 
     @Override
     public void onCreate() {
+        LocationTracker.startWithPerms(this);
         Local.load(this);
-        // Start up the thread running the service. Note that we create a
-        // separate thread because the service normally runs in the process's
-        // main thread, which we don't want to block. We also make it
-        // background priority so CPU-intensive work doesn't disrupt our UI.
-        HandlerThread thread = new HandlerThread("WalkTrackingService", HandlerThread.NORM_PRIORITY);
-        thread.start();
-
-        // Get the HandlerThread's Looper and use it for our Handler
-        serviceLooper = thread.getLooper();
-        serviceHandler = new ServiceHandler(serviceLooper);
-
-        LocationTracker.addListener(l -> {
-            Message message = new Message();
-            message.obj = l;
-            serviceHandler.handleMessage(message);
-        });
+        Logger.getGlobal().log(Level.INFO, "onCreate: " + this);
     }
+
+    private Notification createNotification() {
+        Intent resultIntent = new Intent(this, MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addNextIntentWithParentStack(resultIntent);
+        PendingIntent resultPendingIntent =
+            stackBuilder.getPendingIntent(0,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        return new Notification.Builder(this)
+            .setContentTitle("My Background Task")
+            .setContentText("Task is running")
+            .setSmallIcon(android.R.drawable.star_big_on)
+            .setContentIntent(resultPendingIntent)
+            .setPriority(Notification.PRIORITY_HIGH)
+            .build();
+    }
+
+    private void locationUpdate(Location loc){
+
+    }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
+        Logger.getGlobal().log(Level.INFO, "Start: " + this);
 
-        // For each start request, send a message to start a job and deliver the
-        // start ID so we know which request we're stopping when we finish the job
-        Message msg = serviceHandler.obtainMessage();
-        msg.arg1 = startId;
-        serviceHandler.sendMessage(msg);
+        startForeground(1, createNotification());
+        LocationTracker.addListener(this::locationUpdate);
 
-        // If we get killed, after returning from here, restart
         return START_STICKY;
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        // We don't provide binding, so return null
         return null;
     }
 
     @Override
     public void onDestroy() {
+        Logger.getGlobal().log(Level.INFO, "Destroy: " + this);
         Local.save(this);
-        Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
+        LocationTracker.startWithPerms(this);
     }
 }

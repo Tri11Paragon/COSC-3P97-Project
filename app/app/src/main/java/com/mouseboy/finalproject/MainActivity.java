@@ -35,11 +35,6 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        LocationTracker.start(this);
-        LocationTracker.addListener(loc -> {
-            Logger.getGlobal().log(Level.INFO, "Lat/Long " + loc.getLatitude() + " " + loc.getLongitude());
-        });
-
         SharedPreferences prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
         if(prefs.contains("username") && prefs.contains("password")){
             String username = prefs.getString("username", "");

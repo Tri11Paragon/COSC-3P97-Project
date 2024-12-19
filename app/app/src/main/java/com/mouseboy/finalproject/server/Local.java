@@ -21,7 +21,7 @@ public class Local {
         ServerApi.AllWalkInfo currentWalk;
     }
 
-    public static void addWalk(){
+    public static synchronized void addWalk(){
 
     }
 
