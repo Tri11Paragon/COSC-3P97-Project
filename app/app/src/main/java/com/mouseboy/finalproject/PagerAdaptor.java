@@ -18,7 +18,7 @@ public class PagerAdaptor extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0:
-                return HomePage.newInstance();
+                return new WalkListDisplayFragment();
             case 1:
                 return HomePage.newInstance();
             case 2:

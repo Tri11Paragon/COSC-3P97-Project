@@ -49,7 +49,7 @@ public class MainFragment extends Fragment {
             // Set custom icons
             switch (position) {
                 case 0:
-                    tab.setIcon(R.drawable.ic_launcher_background);
+                    tab.setIcon(android.R.drawable.ic_dialog_info);
                     break;
                 case 1:
                     tab.setIcon(android.R.drawable.star_big_on);

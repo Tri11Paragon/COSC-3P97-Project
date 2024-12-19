@@ -21,8 +21,15 @@ public class Local {
         ServerApi.AllWalkInfo currentWalk;
     }
 
-
     public static void addWalk(){
+
+    }
+
+    public static void deleteWalk(ServerApi.WalkInfo walk){
+
+    }
+
+    public static void updateWalk(ServerApi.WalkInfo walk) {
 
     }
 

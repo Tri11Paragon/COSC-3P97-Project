@@ -7,6 +7,7 @@ import com.mouseboy.finalproject.util.Gson;
 import com.mouseboy.finalproject.util.OkHttp;
 import com.mouseboy.finalproject.weather.WeatherApi;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import okhttp3.Headers;
@@ -25,7 +26,7 @@ public class ServerApi {
     }
 
 
-    public static class User{
+    public static class User implements Serializable {
         public String id;
         public String name;
 
@@ -35,7 +36,7 @@ public class ServerApi {
         }
     }
 
-    public static class AllWalkInfo{
+    public static class AllWalkInfo implements Serializable {
         public String user_id;
         public WalkInfo walk;
         public WalkInstanceInfo[] conditions;
@@ -47,7 +48,7 @@ public class ServerApi {
         }
     }
 
-    public static class WalkInstanceInfo{
+    public static class WalkInstanceInfo implements Serializable {
         @JsonAdapter(Gson.UnixTimestampAdapter.class)
         public Date time;
         public double lon;
@@ -55,7 +56,7 @@ public class ServerApi {
         public WeatherApi.WeatherResult.CurrentWeather conditions;
     }
 
-    public static class WalkInfo{
+    public static class WalkInfo implements Serializable {
         public Integer id;
         @JsonAdapter(Gson.UnixTimestampAdapter.class)
         public Date start;
@@ -66,7 +67,7 @@ public class ServerApi {
         public double rating;
     }
 
-    public static class WalkInfoId{
+    public static class WalkInfoId implements Serializable {
         public String user_id;
         public int walk_id;
 
