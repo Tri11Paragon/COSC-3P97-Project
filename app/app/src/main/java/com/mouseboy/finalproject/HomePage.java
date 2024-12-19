@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.mouseboy.finalproject.server.Local;
 import com.mouseboy.finalproject.server.ServerApi;
 import com.mouseboy.finalproject.util.Util;
+import com.mouseboy.finalproject.weather.LocationTracker;
 import com.mouseboy.finalproject.weather.WeatherApi;
 
 public class HomePage extends Fragment implements Runnable {
@@ -33,24 +34,13 @@ public class HomePage extends Fragment implements Runnable {
         return new HomePage();
     }
 
-    private ActivityResultLauncher<String[]> requester;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        requester = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), g -> {
-            boolean g2 = true;
-            for (boolean entry : g.values()) {
-                g2 &= entry;
-            }
-            if (g2) {
-                permsGranted();
-            } else {
-                Util.toast(requireContext(), "Location Permission Needed");
-            }
-        });
+        LocationTracker.setupPermReq(this);
     }
 
     @Override
@@ -62,15 +52,8 @@ public class HomePage extends Fragment implements Runnable {
         startTimer();
     }
 
-    private void reqPerms(){
-        requester.launch(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION});
-    }
-
     Button button;
-    private void permsGranted(){
-        WalkTrackingService.start(requireContext());
-        button.setText("STOP WALK");
-    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -89,7 +72,10 @@ public class HomePage extends Fragment implements Runnable {
                 WalkTrackingService.stop(requireContext());
                 button.setText("START WALK");
             }else{
-                reqPerms();
+                LocationTracker.ensurePermissions(this, () -> {
+                    WalkTrackingService.start(requireContext());
+                    button.setText("STOP WALK");
+                });
             }
         });
         return view;
@@ -102,23 +88,25 @@ public class HomePage extends Fragment implements Runnable {
     public void update_fav() {
         TextView status = requireView().findViewById(R.id.current_conditions_status);
         if (Local.isUserLoggedIn()) {
-            WeatherApi.request(requireContext(), new WeatherApi.WeatherRequest(), weather -> {
-                System.out.println(weather);
-                ServerApi.analyzeWalkConditions(requireContext(), new ServerApi.Meow(Local.getCurrentUser().id, weather.current), parker -> {
-                    if (parker > 0.5) {
-                        status.setText("Favourable");
-                        status.setTextColor(Color.rgb(25, 200, 25));
-                    } else {
-                        status.setText("Unfavourable");
-                        status.setTextColor(Color.rgb(200, 25, 25));
-                    }
+            LocationTracker.ensurePermissions(this, () -> {
+                WeatherApi.request(requireContext(), new WeatherApi.WeatherRequest(), weather -> {
+                    System.out.println(weather);
+                    ServerApi.analyzeWalkConditions(requireContext(), new ServerApi.Meow(Local.getCurrentUser().id, weather.current), parker -> {
+                        if (parker > 0.5) {
+                            status.setText("Favourable");
+                            status.setTextColor(Color.rgb(25, 200, 25));
+                        } else {
+                            status.setText("Unfavourable");
+                            status.setTextColor(Color.rgb(200, 25, 25));
+                        }
+                    }, error -> {
+                        System.out.println("Parker is also bad at java 2");
+                        Util.logThrowable(error);
+                    });
                 }, error -> {
-                    System.out.println("Parker is also bad at java 2");
+                    System.out.println("Parker writes bad java");
                     Util.logThrowable(error);
                 });
-            }, error -> {
-                System.out.println("Parker writes bad java");
-                Util.logThrowable(error);
             });
         } else {
             status.setText("Unknown");

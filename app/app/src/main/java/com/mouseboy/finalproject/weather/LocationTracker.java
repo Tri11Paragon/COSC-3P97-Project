@@ -16,10 +16,15 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
+import com.mouseboy.finalproject.HomePage;
 import com.mouseboy.finalproject.MainActivity;
+import com.mouseboy.finalproject.util.Util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
 
 public class LocationTracker {
     private static boolean hasGps;
@@ -72,6 +77,16 @@ public class LocationTracker {
         network(lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
     }
 
+    @SuppressLint("MissingPermission")//checked before
+    public static synchronized void hasSomething(Context context) {
+        LocationManager lm = getSystemService(context, LocationManager.class);
+        assert lm != null;
+        hasGps = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        hasNetwork = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        gps(lm.getLastKnownLocation(LocationManager.GPS_PROVIDER));
+        network(lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
+    }
+
     private static LocationListener create(boolean g) {
         return new LocationListener() {
             @Override
@@ -114,5 +129,35 @@ public class LocationTracker {
             curr = loc;
             for (LocationListeners item : listeners) item.update(curr);
         }
+    }
+
+
+
+    private static HashMap<HomePage, ActivityResultLauncher<String[]>> requesters = new HashMap();
+    private static final ArrayList<Runnable> requestedPerms = new ArrayList<>();
+
+    public static void setupPermReq(HomePage context){
+        ActivityResultLauncher<String[]> requester = context.registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), g -> {
+            boolean g2 = true;
+            for (boolean entry : g.values()) {
+                g2 &= entry;
+            }
+            if (g2) {
+                hasSomething(context.requireContext());
+                synchronized (requestedPerms){
+                    for(int i = 0; i < requestedPerms.size(); i ++) requestedPerms.get(i).run();
+                    requestedPerms.clear();
+                }
+            } else {
+                Objects.requireNonNull(requesters.get(context)).launch(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION});
+            }
+        });
+        requesters.put(context, requester);
+    }
+    public static void ensurePermissions(HomePage context, Runnable run){
+        synchronized (requestedPerms){
+            requestedPerms.add(run);
+        }
+        Objects.requireNonNull(requesters.get(context)).launch(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION});
     }
 }
