@@ -25,6 +25,8 @@ import com.mouseboy.finalproject.weather.WeatherApi;
 public class HomePage extends Fragment implements Runnable {
 
     private Handler handler = new Handler();
+    private Handler handler2 = new Handler();
+    private Runnable timer;
 
     public HomePage() {
         // Required empty public constructor
@@ -50,6 +52,14 @@ public class HomePage extends Fragment implements Runnable {
         status.setText("Unknown");
         status.setTextColor(Color.GRAY);
         startTimer();
+
+        timer = () -> {
+            TextView test = requireView().findViewById(R.id.elapsed_time);
+
+            handler2.postDelayed(timer, 1000);
+        };
+
+        handler2.post(timer);
     }
 
     Button button;
