@@ -140,7 +140,9 @@ public class WalkDisplayFragment extends Fragment {
         ((TextView) view.findViewById(R.id.started)).setText(title.start.toString());
         ((TextView) view.findViewById(R.id.ended)).setText(title.end.toString());
 
-        view.findViewById(R.id.deleteWalk).setOnClickListener(v -> {
+        view.findViewById(R.id.backButton).setOnClickListener(v -> { list.pop(); });
+
+        view.findViewById(R.id.deleteWalkButton).setOnClickListener(v -> {
             ServerApi.WalkInfo lwalk = getArguments() != null ? (ServerApi.WalkInfo) getArguments().getSerializable(ARG_WALK) : null;
 
             if (lwalk == null)
