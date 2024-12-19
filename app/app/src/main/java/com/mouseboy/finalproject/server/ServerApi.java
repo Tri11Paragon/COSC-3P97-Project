@@ -98,6 +98,14 @@ public class ServerApi {
         public double rating;
         public String name;
         public String comment;
+        public WalkInfoUpdate(){}
+
+        public WalkInfoUpdate(int walk_id, double rating, String name, String comment) {
+            this.walk_id = walk_id;
+            this.rating = rating;
+            this.name = name;
+            this.comment = comment;
+        }
     }
 
 
