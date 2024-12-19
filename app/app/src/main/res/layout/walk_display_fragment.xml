@@ -134,6 +134,7 @@
             android:layout_weight="1"
             android:layout_margin="8dp"
             android:id="@+id/deleteWalkButton"
+            android:backgroundTint="@android:color/holo_red_dark"
             android:text="Delete Walk"
             android:textSize="26sp"/>
     </LinearLayout>
