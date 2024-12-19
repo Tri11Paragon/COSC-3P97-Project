@@ -127,7 +127,7 @@
             android:layout_margin="8dp"
             android:id="@+id/backButton"
             android:text="Back"
-            android:textSize="26sp"/>
+            android:textSize="20sp"/>
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -136,6 +136,6 @@
             android:id="@+id/deleteWalkButton"
             android:backgroundTint="@android:color/holo_red_dark"
             android:text="Delete Walk"
-            android:textSize="26sp"/>
+            android:textSize="20sp"/>
     </LinearLayout>
 </LinearLayout>
