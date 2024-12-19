@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentManager;
 import com.mouseboy.finalproject.server.ServerApi;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class WalkListDisplayFragment extends Fragment {
 
@@ -91,15 +92,31 @@ public class WalkListDisplayFragment extends Fragment {
     }
 
     void update_walk(ServerApi.WalkInfo walk){
-
+        for (int i = 0; i < items.size(); i++){
+            if (Objects.equals(items.get(i).id, walk.id)){
+                items.set(i, walk);
+                break;
+            }
+        }
     }
 
     void delete_walk(ServerApi.WalkInfo walk){
+        int index = -1;
 
+        for (int i = 0; i < items.size(); i++){
+            if (Objects.equals(items.get(i).id, walk.id)){
+                index = i;
+                break;
+            }
+        }
+
+        if (index >= 0)
+            items.remove(index);
     }
 
     void pop() {
-
+        FragmentManager manager = requireActivity().getSupportFragmentManager();
+        manager.popBackStack();
     }
 }
 
