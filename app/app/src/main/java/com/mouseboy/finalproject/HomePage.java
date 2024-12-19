@@ -81,6 +81,12 @@ public class HomePage extends Fragment implements Runnable {
         return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        handler.removeCallbacks(this);
+    }
+
     public void startTimer(){
         handler.post(this);
     }
