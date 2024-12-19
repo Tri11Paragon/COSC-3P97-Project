@@ -75,15 +75,13 @@ public class Local {
 
     public static synchronized void listWalks(Context context, Date start, Date end, OkHttp.OnResponse<ServerApi.WalkInfo[]> response, OkHttp.OnFailure error){
 
-        ArrayList<ServerApi.AllWalkInfo> walks = new ArrayList<>();
+        ArrayList<ServerApi.WalkInfo> walks = new ArrayList<>();
         for(int i = 0; i < state.walks.size(); i ++){
-
+            var walk = state.walks.get(i);
+            if(walk.walk.start.compareTo(start) >= 0 && walk.walk.end.compareTo(end) <= 0){
+                walks.add(new Gson().fromJson(new Gson().toJson(walk), ServerApi.WalkInfo.class));
+            }
         }
-        //        java.util.stream.Stream<ServerApi.WalkInfo> localStream = state.walks.stream()
-//            .map(v -> v.walk)
-//            .filter(walk -> walk.start.compareTo(start) < 0)
-//            .filter(walk -> walk.start.compareTo(end) > 0)
-//            .sorted(Comparator.comparingLong(walkInfo -> walkInfo.start.getTime()));
 //        if(isUserLoggedIn())
 //            ServerApi.listWalks(context, new ServerApi.ListWalks(getCurrentUser().id, start, end), nl -> {
 //                response.onResponse(Stream.concat(Arrays.stream(nl), localStream)

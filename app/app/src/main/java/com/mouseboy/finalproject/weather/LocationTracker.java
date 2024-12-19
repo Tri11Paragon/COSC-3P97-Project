@@ -38,6 +38,10 @@ public class LocationTracker {
         return curr;
     }
 
+    public static synchronized void removeListener(LocationListeners listener) {
+        listeners.remove(listener);
+    }
+
     public interface LocationListeners {
         void update(Location loc);
     }
