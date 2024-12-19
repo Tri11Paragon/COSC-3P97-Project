@@ -22,6 +22,10 @@ import com.mouseboy.finalproject.util.Util;
 import com.mouseboy.finalproject.weather.LocationTracker;
 import com.mouseboy.finalproject.weather.WeatherApi;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 public class HomePage extends Fragment implements Runnable {
 
     private Handler handler = new Handler();
@@ -56,7 +60,25 @@ public class HomePage extends Fragment implements Runnable {
         timer = () -> {
             TextView test = requireView().findViewById(R.id.elapsed_time);
             if (WalkTrackingService.isRunning(requireContext())){
+                Date start = Local.startOfCurrentWalk();
+                if (start != null) {
+                    Calendar ca = Calendar.getInstance();
+                    long diffInMillis = Math.abs(ca.getTimeInMillis() - start.getTime());
+                    long diffInDays = TimeUnit.MILLISECONDS.toDays(diffInMillis);
+                    long diffInHours = TimeUnit.MILLISECONDS.toHours(diffInMillis) % 24;
+                    long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(diffInMillis) % 60;
+                    long diffInSeconds = TimeUnit.MILLISECONDS.toSeconds(diffInMillis) % 60;
 
+                    String str = "Time Elapsed ";
+                    if (diffInDays > 0)
+                        str += diffInDays + " Days ";
+                    if (diffInHours > 0)
+                        str += diffInHours + " Hours ";
+                    if (diffInMinutes > 0)
+                        str += diffInMinutes + " Minutes ";
+                    str += diffInSeconds + " Seconds";
+                    test.setText(str);
+                }
             } else {
                 test.setText("");
             }
@@ -99,6 +121,7 @@ public class HomePage extends Fragment implements Runnable {
     public void onDestroyView() {
         super.onDestroyView();
         handler.removeCallbacks(this);
+        handler2.removeCallbacks(timer);
     }
 
     public void startTimer(){
