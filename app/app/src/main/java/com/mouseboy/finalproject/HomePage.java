@@ -107,6 +107,7 @@ public class HomePage extends Fragment implements Runnable {
             if(WalkTrackingService.isRunning(requireContext())){
                 WalkTrackingService.stop(requireContext());
                 button.setText("START WALK");
+                MainActivity.switchToUserHome(requireActivity());
             }else{
                 LocationTracker.ensurePermissions(this, () -> {
                     WalkTrackingService.start(requireContext());
