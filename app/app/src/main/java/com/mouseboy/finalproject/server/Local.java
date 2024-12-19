@@ -63,8 +63,23 @@ public class Local {
         int curr_walk_id = -1;
     }
 
+    void sort(){
+//        Object[] array = data.toArray();
+//        Arrays.sort(array, (a, b) -> Util.compare_to(((Meeting)a).getDate(), ((Meeting)b).getDate()));
+//        data.clear();
+//        for (Object o : array)
+//            data.add((Meeting)o);
+//
+//        super.notifyDataSetChanged();
+    }
+
     public static synchronized void listWalks(Context context, Date start, Date end, OkHttp.OnResponse<ServerApi.WalkInfo[]> response, OkHttp.OnFailure error){
-//        java.util.stream.Stream<ServerApi.WalkInfo> localStream = state.walks.stream()
+
+        ArrayList<ServerApi.AllWalkInfo> walks = new ArrayList<>();
+        for(int i = 0; i < state.walks.size(); i ++){
+
+        }
+        //        java.util.stream.Stream<ServerApi.WalkInfo> localStream = state.walks.stream()
 //            .map(v -> v.walk)
 //            .filter(walk -> walk.start.compareTo(start) < 0)
 //            .filter(walk -> walk.start.compareTo(end) > 0)
@@ -110,10 +125,13 @@ public class Local {
 
     public static synchronized void deleteWalk(Context context, int walk_id, OkHttp.OnResponse<Void> response, OkHttp.OnFailure error){
 
-        if(state.walks.removeIf(v -> v.walk.id == walk_id)){
-            save(context);
-            response.onResponse(null);
-            return;
+        for(int i = 0; i < state.walks.size(); i ++){
+            if (state.walks.get(i).walk.id == walk_id){
+                state.walks.remove(i);
+                save(context);
+                response.onResponse(null);
+                return;
+            }
         }
 
         if(isUserLoggedIn()){
@@ -153,7 +171,8 @@ public class Local {
         }
     }
 
-    public static void load(Context context){
+    public static synchronized void load(Context context){
+        if(state.currentWalk != null)return;
         if (!getOut(context).exists()) return;
         try(FileReader reader = new FileReader(getOut(context))) {
             state = new Gson().fromJson(reader, Information.class);
