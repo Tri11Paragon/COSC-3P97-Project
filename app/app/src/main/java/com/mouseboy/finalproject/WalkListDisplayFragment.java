@@ -46,7 +46,6 @@ public class WalkListDisplayFragment extends Fragment {
                 },
                 Util.toastFail(requireContext(), "Failed to Update Walk")
             );
-
         } else
             items = (ArrayList<ServerApi.WalkInfo>) savedInstanceState.getSerializable("LocalWalks");
         update_items();
@@ -55,6 +54,7 @@ public class WalkListDisplayFragment extends Fragment {
         listView.setOnItemClickListener(this::handle_click);
         listView.requestFocus();
     }
+
 
     void update_items(){
         ListView listView = requireView().findViewById(R.id.walkListView);

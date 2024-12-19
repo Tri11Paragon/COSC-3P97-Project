@@ -55,8 +55,12 @@ public class WalkDisplayFragment extends Fragment {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 ServerApi.WalkInfo lwalk = getArguments() != null ? (ServerApi.WalkInfo) getArguments().getSerializable(ARG_WALK) : null;
 
-                if (lwalk == null)
+                if (lwalk == null) {
+                    Util.toastFail(requireContext(), "Walk Should not be null!");
                     return;
+                }
+
+                lwalk.rating = progress / 100.0;
 
                 list.update_walk(lwalk);
                 Local.updateWalk(
