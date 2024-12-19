@@ -83,8 +83,8 @@ public class WalkListDisplayFragment extends Fragment {
 
     void switch_to_fragment(WalkDisplayFragment fragment){
         FragmentManager manager = requireActivity().getSupportFragmentManager();
-        Fragment meetingDetailFragment = manager.findFragmentById(R.id.fragment_detail_container);
-        if (meetingDetailFragment != null) {
+        Fragment walkDetailFragment = manager.findFragmentById(R.id.fragment_detail_container);
+        if (walkDetailFragment != null) {
             manager.popBackStack();
             manager.beginTransaction()
                 .setCustomAnimations(0, android.R.anim.fade_out)
